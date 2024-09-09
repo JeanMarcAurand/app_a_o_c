@@ -34,9 +34,9 @@ class MyAppState extends ChangeNotifier {
   MyAppState() {
     myControllerTextFieldRecherche.addListener(() {
       // Effectuer votre traitement ici
-      print(myControllerTextFieldRecherche.text); // Par exemple, afficher le texte dans la console
-      searchStrinInName(
-                        myControllerTextFieldRecherche.text);
+      print(myControllerTextFieldRecherche
+          .text); // Par exemple, afficher le texte dans la console
+      searchStrinInName(myControllerTextFieldRecherche.text);
     });
   }
   // ↓ Add this.
@@ -75,6 +75,22 @@ class MyAppState extends ChangeNotifier {
     ListeAdherents.instance.searchStingInName(text);
     currentAd = ListeAdherents.instance.adherentCourant;
     notifyListeners();
+  }
+
+  String resultatRecherche() {
+    String nombreTrouve = "";
+    if (ListeAdherents.instance.listeAdherentsCourant.isEmpty ||
+    ListeAdherents.instance.adherentCourant.nom.isEmpty) {
+      nombreTrouve = "Aucune fiche trouvée";
+    } else {
+      if (ListeAdherents.instance.listeAdherentsCourant.length == 1) {
+        nombreTrouve = "Une seule fiche touvée";
+      } else {
+        nombreTrouve =
+            '${ListeAdherents.instance.listeAdherentsCourant.length} fiches trouvées';
+      }
+    }
+    return '$nombreTrouve sur un total de ${ListeAdherents.instance.listeAdherentsComplet.length} fiches';
   }
 }
 
@@ -351,8 +367,9 @@ class BarreNavigation extends StatelessWidget {
 //      color: theme.colorScheme.onPrimary,
 //    );
     var appState = context.watch<MyAppState>();
-    var myControllerTextFieldRechercheLocal = appState.myControllerTextFieldRecherche;
-        
+    var myControllerTextFieldRechercheLocal =
+        appState.myControllerTextFieldRecherche;
+
     return Row(
         // ↓ Change this line.
         children: [
@@ -369,35 +386,40 @@ class BarreNavigation extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: TextField(
-              controller: myControllerTextFieldRechercheLocal,
-              //             onChanged: (text) {
-              //               print('First text field: $text (${text.characters.length})');
-              //               appState.searchStrinInName(text);
-              //             },
-              decoration: InputDecoration(
-                hintText: 'Rechercher...',
-                // Add a clear button to the search bar
-                suffixIcon: IconButton(
-                  icon: Icon(Icons.clear),
-                  onPressed: () {
-                    // perform the clear.
-                    myControllerTextFieldRechercheLocal.clear();
-                  },
+            child: Column(
+              children: [
+                TextField(
+                  controller: myControllerTextFieldRechercheLocal,
+                  //             onChanged: (text) {
+                  //               print('First text field: $text (${text.characters.length})');
+                  //               appState.searchStrinInName(text);
+                  //             },
+                  decoration: InputDecoration(
+                    hintText: 'Rechercher...',
+                    // Add a clear button to the search bar
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        // perform the clear.
+                        myControllerTextFieldRechercheLocal.clear();
+                      },
+                    ),
+                    // Add a search icon or button to the search bar
+                    prefixIcon: IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () {
+                        // Perform the search here
+                        appState.searchStrinInName(
+                            myControllerTextFieldRechercheLocal.text);
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
                 ),
-                // Add a search icon or button to the search bar
-                prefixIcon: IconButton(
-                  icon: Icon(Icons.search),
-                  onPressed: () {
-                    // Perform the search here
-                    appState.searchStrinInName(
-                        myControllerTextFieldRechercheLocal.text);
-                  },
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
+                Text(appState.resultatRecherche()),
+              ],
             ),
           ),
           Padding(
