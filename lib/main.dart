@@ -80,7 +80,7 @@ class MyAppState extends ChangeNotifier {
   String resultatRecherche() {
     String nombreTrouve = "";
     if (ListeAdherents.instance.listeAdherentsCourant.isEmpty ||
-    ListeAdherents.instance.adherentCourant.nom.isEmpty) {
+        ListeAdherents.instance.adherentCourant.nom.isEmpty) {
       nombreTrouve = "Aucune fiche trouvée";
     } else {
       if (ListeAdherents.instance.listeAdherentsCourant.length == 1) {
@@ -121,6 +121,8 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             SafeArea(
               child: NavigationRail(
+                backgroundColor: Theme.of(context).hoverColor,
+                //  const Color.fromARGB(255, 111, 165, 113),
                 extended: constraints.maxWidth >= 600, // ← Here.
                 destinations: [
                   NavigationRailDestination(
@@ -168,153 +170,142 @@ class GeneratorPage extends StatelessWidget {
       icon = Icons.favorite_border;
     }
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BarreNavigation(pair: pair),
-          SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                flex: 2,
-                child: ChampTexte(
-                  labelTextDecoration: "Mme,M",
-                  labelText: appState.currentAd.civilite,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Liste adhérents',
+            style: Theme.of(context).textTheme.headlineMedium),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BarreNavigation(pair: pair),
+            SizedBox(height: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: ChampTexte(
+                    labelTextDecoration: "Mme,M",
+                    labelText: appState.currentAd.civilite,
+                  ),
                 ),
-              ),
-              Flexible(
-                flex: 5,
-                child: ChampTexte(
-                  labelTextDecoration: "Nom",
-                  labelText: appState.currentAd.nom,
+                Flexible(
+                  flex: 5,
+                  child: ChampTexte(
+                    labelTextDecoration: "Nom",
+                    labelText: appState.currentAd.nom,
+                  ),
                 ),
-              ),
-              Flexible(
-                flex: 5,
-                child: ChampTexte(
-                  labelTextDecoration: "Prenom",
-                  labelText: appState.currentAd.prenom,
+                Flexible(
+                  flex: 5,
+                  child: ChampTexte(
+                    labelTextDecoration: "Prenom",
+                    labelText: appState.currentAd.prenom,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 20),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(width: 20),
-              Flexible(
-                flex: 2,
-                child: ChampTexte(
-                  labelTextDecoration: "Numéro",
-                  labelText: appState.currentAd.noRue,
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 20),
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(width: 20),
+                Flexible(
+                  flex: 2,
+                  child: ChampTexte(
+                    labelTextDecoration: "Numéro",
+                    labelText: appState.currentAd.noRue,
+                  ),
                 ),
-              ),
-              Flexible(
-                flex: 10,
-                child: ChampTexte(
-                  labelTextDecoration: "Adresse",
-                  labelText: appState.currentAd.adresse,
+                Flexible(
+                  flex: 10,
+                  child: ChampTexte(
+                    labelTextDecoration: "Adresse",
+                    labelText: appState.currentAd.adresse,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                flex: 2,
-                child: SizedBox(width: 20),
-              ),
-              Flexible(
-                flex: 10,
-                child: ChampTexte(
-                  labelTextDecoration: "Complement adresse",
-                  labelText: appState.currentAd.complementAdresse,
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: SizedBox(width: 20),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                flex: 2,
-                child: SizedBox(width: 20),
-              ),
-              Flexible(
-                flex: 5,
-                child: ChampTexte(
-                  labelTextDecoration: "Code postal",
-                  labelText: appState.currentAd.codePostal,
+                Flexible(
+                  flex: 10,
+                  child: ChampTexte(
+                    labelTextDecoration: "Complement adresse",
+                    labelText: appState.currentAd.complementAdresse,
+                  ),
                 ),
-              ),
-              Flexible(
-                flex: 5,
-                child: ChampTexte(
-                  labelTextDecoration: "Commune",
-                  labelText: appState.currentAd.commune,
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: SizedBox(width: 20),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(height: 20),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                flex: 2,
-                child: SizedBox(width: 20),
-              ),
-              Flexible(
-                flex: 5,
-                child: ChampTexte(
-                  labelTextDecoration: "Téléphone",
-                  labelText: appState.currentAd.noTelephone,
+                Flexible(
+                  flex: 5,
+                  child: ChampTexte(
+                    labelTextDecoration: "Code postal",
+                    labelText: appState.currentAd.codePostal,
+                  ),
                 ),
-              ),
-              Flexible(
-                flex: 5,
-                child: ChampTexte(
-                  labelTextDecoration: "@ mail",
-                  labelText: appState.currentAd.adresseMail,
+                Flexible(
+                  flex: 5,
+                  child: ChampTexte(
+                    labelTextDecoration: "Commune",
+                    labelText: appState.currentAd.commune,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  appState.toggleFavorite();
-                },
-                icon: Icon(icon),
-                label: Text('Like'),
-              ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  appState.getNext();
-                },
-                child: Text('Next'),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 20),
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  flex: 2,
+                  child: SizedBox(width: 20),
+                ),
+                Flexible(
+                  flex: 5,
+                  child: ChampTexte(
+                    labelTextDecoration: "Téléphone",
+                    labelText: appState.currentAd.noTelephone,
+                  ),
+                ),
+                Flexible(
+                  flex: 5,
+                  child: ChampTexte(
+                    labelTextDecoration: "@ mail",
+                    labelText: appState.currentAd.adresseMail,
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            BarreEdition(pair: pair),
+          ],
+        ),
       ),
     );
   }
@@ -348,6 +339,74 @@ class FavoritesPage extends StatelessWidget {
   }
 }
 
+class BarreEdition extends StatelessWidget {
+  // This controller will store the value of the search bar
+  // final  TextEditingController _searchController = TextEditingController();
+
+  BarreEdition({
+    super.key,
+    required this.pair,
+  });
+
+  final WordPair pair;
+
+  @override
+  Widget build(BuildContext context) {
+//     final theme = Theme.of(context);       // ← Add this.
+    // ↓ Add this.
+//    final style = theme.textTheme.displayMedium!.copyWith(
+//      color: theme.colorScheme.onPrimary,
+//    );
+    var appState = context.watch<MyAppState>();
+    var myControllerTextFieldRechercheLocal =
+        appState.myControllerTextFieldRecherche;
+
+    return Row(
+        // ↓ Change this line.
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                print("Supprimer");
+                appState.setAdherentPrecedent();
+              },
+              icon: Icon(Icons.delete_forever),
+              label: Text('Supprimer'),
+              //                                    color: theme.colorScheme.primary,    // ← And also this.
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                print("Modifier");
+                appState.setAdherentSuivant();
+              },
+              iconAlignment: IconAlignment.end,
+              label: Text('Modifier'),
+              icon: Icon(Icons.edit),
+              //                                    color: theme.colorScheme.primary,    // ← And also this.
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                print("Nouveau");
+                appState.setAdherentSuivant();
+              },
+              iconAlignment: IconAlignment.end,
+              label: Text('Nouveau'),
+              icon: Icon(Icons.person_add),
+              //                                    color: theme.colorScheme.primary,    // ← And also this.
+            ),
+          ),
+        ]);
+  }
+}
+
 class BarreNavigation extends StatelessWidget {
   // This controller will store the value of the search bar
   // final  TextEditingController _searchController = TextEditingController();
@@ -370,72 +429,70 @@ class BarreNavigation extends StatelessWidget {
     var myControllerTextFieldRechercheLocal =
         appState.myControllerTextFieldRecherche;
 
-    return Row(
-        // ↓ Change this line.
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                print("Précedent");
-                appState.setAdherentPrecedent();
-              },
-              icon: Icon(Icons.arrow_back_ios),
-              label: Text('Précédent'),
-              //                                    color: theme.colorScheme.primary,    // ← And also this.
-            ),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                TextField(
-                  controller: myControllerTextFieldRechercheLocal,
-                  //             onChanged: (text) {
-                  //               print('First text field: $text (${text.characters.length})');
-                  //               appState.searchStrinInName(text);
-                  //             },
-                  decoration: InputDecoration(
-                    hintText: 'Rechercher...',
-                    // Add a clear button to the search bar
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.clear),
-                      onPressed: () {
-                        // perform the clear.
-                        myControllerTextFieldRechercheLocal.clear();
-                      },
-                    ),
-                    // Add a search icon or button to the search bar
-                    prefixIcon: IconButton(
-                      icon: Icon(Icons.search),
-                      onPressed: () {
-                        // Perform the search here
-                        appState.searchStrinInName(
-                            myControllerTextFieldRechercheLocal.text);
-                      },
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
+    return Row(children: [
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton.icon(
+          onPressed: () {
+            print("Précedent");
+            appState.setAdherentPrecedent();
+          },
+          icon: Icon(Icons.arrow_back_ios),
+          label: Text('Précédent'),
+          //                                    color: theme.colorScheme.primary,    // ← And also this.
+        ),
+      ),
+      Expanded(
+        child: Column(
+          children: [
+            TextField(
+              controller: myControllerTextFieldRechercheLocal,
+              //             onChanged: (text) {
+              //               print('First text field: $text (${text.characters.length})');
+              //               appState.searchStrinInName(text);
+              //             },
+              decoration: InputDecoration(
+                hintText: 'Rechercher...',
+                // Add a clear button to the search bar
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    // perform the clear.
+                    myControllerTextFieldRechercheLocal.clear();
+                  },
                 ),
-                Text(appState.resultatRecherche()),
-              ],
+                // Add a search icon or button to the search bar
+                prefixIcon: IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    // Perform the search here
+                    appState.searchStrinInName(
+                        myControllerTextFieldRechercheLocal.text);
+                  },
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton.icon(
-              onPressed: () {
-                print("Suivant");
-                appState.setAdherentSuivant();
-              },
-              iconAlignment: IconAlignment.end,
-              label: Text('Suivant'),
-              icon: Icon(Icons.arrow_forward_ios),
-              //                                    color: theme.colorScheme.primary,    // ← And also this.
-            ),
-          ),
-        ]);
+            Text(appState.resultatRecherche()),
+          ],
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton.icon(
+          onPressed: () {
+            print("Suivant");
+            appState.setAdherentSuivant();
+          },
+          iconAlignment: IconAlignment.end,
+          label: Text('Suivant'),
+          icon: Icon(Icons.arrow_forward_ios),
+          //                                    color: theme.colorScheme.primary,    // ← And also this.
+        ),
+      ),
+    ]);
   }
 }
 
@@ -461,6 +518,7 @@ class ChampTexte extends StatelessWidget {
           border: OutlineInputBorder(),
           labelText: labelTextDecoration,
         ),
+        style: TextStyle(color: Colors.black),
       ),
     );
   }
