@@ -1,4 +1,3 @@
-
 class Adherent {
   Adherent(this._civilite, this._nom, this._prenom);
 
@@ -177,7 +176,7 @@ class ListeAdherents {
       }
     }
     if (listeAdherentsRecherche.isEmpty) {
-             listeAdherentsRecherche.add(adherentVide);
+      listeAdherentsRecherche.add(adherentVide);
     }
 
     listeAdherentsCourant = listeAdherentsRecherche;
@@ -185,6 +184,19 @@ class ListeAdherents {
 
     print(
         'searchStingInName adherentCourant:$adherentCourant\n listeAdherents:$listeAdherentsCourant');
+  }
+
+  void deleteAdherentCourant() {
+    listeAdherentsComplet.remove(adherentCourant);
+    listeAdherentsCourant.remove(adherentCourant);
+    if (indiceAdherentCourant > 0) {
+      indiceAdherentCourant--;
+    }
+    if (listeAdherentsCourant.isEmpty) {
+      listeAdherentsCourant.add(adherentVide);
+      indiceAdherentCourant = 0;
+    }
+    adherentCourant = listeAdherentsCourant[indiceAdherentCourant];
   }
 
   @override

@@ -92,6 +92,12 @@ class MyAppState extends ChangeNotifier {
     }
     return '$nombreTrouve sur un total de ${ListeAdherents.instance.listeAdherentsComplet.length} fiches';
   }
+
+  void deleteAdherentCourant() {
+    ListeAdherents.instance.deleteAdherentCourant();
+    currentAd = ListeAdherents.instance.adherentCourant;
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -110,6 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
         page = GeneratorPage();
         break;
       case 1:
+        page = FavoritesPage();
+        break;
+      case 2:
+        page = FavoritesPage();
+        break;
+      case 3:
         page = FavoritesPage();
         break;
       default:
@@ -132,6 +144,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   NavigationRailDestination(
                     icon: Icon(Icons.calendar_month),
                     label: Text('Agenda'),
+                  ),
+                   NavigationRailDestination(
+                    icon: Icon(Icons.euro),
+                    label: Text('Bon de sortie'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.settings),
+                    label: Text('Paramètres'),
                   ),
                 ],
                 selectedIndex: selectedIndex, // ← Change to this.
@@ -368,10 +388,29 @@ class BarreEdition extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
-              onPressed: () {
-                print("Supprimer");
-                appState.setAdherentPrecedent();
-              },
+              onPressed: () => showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Suppression de la fiche d\'adhérent'),
+                  content: const Text('La suppression est définitive!'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Annuler'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        print("Supprimer");
+                        appState.deleteAdherentCourant();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Supprimer'),
+                    ),
+                  ],
+                ),
+              ),
               icon: Icon(Icons.delete_forever),
               label: Text('Supprimer'),
               //                                    color: theme.colorScheme.primary,    // ← And also this.
