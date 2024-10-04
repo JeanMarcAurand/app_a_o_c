@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'liste_adherents.dart';
 
-void main() {
+Future<void> main() async {
+    ListeAdherents instanceListeAdherent = ListeAdherents.instance;
+      await instanceListeAdherent.lectureFichierAdherents();
+
   runApp(MyApp());
 }
 
@@ -29,15 +32,18 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   Adherent currentAd = ListeAdherents.instance.adherentCourant;
+  Adherent editAd = Adherent("", "", "");
+
   TextEditingController myControllerTextFieldRecherche =
       TextEditingController();
   MyAppState() {
     myControllerTextFieldRecherche.addListener(() {
       // Effectuer votre traitement ici
-      print(myControllerTextFieldRecherche
-          .text); // Par exemple, afficher le texte dans la console
+      //print(myControllerTextFieldRecherche
+      //    .text); // Par exemple, afficher le texte dans la console
       searchStrinInName(myControllerTextFieldRecherche.text);
     });
+
   }
   // ↓ Add this.
   void getNext() {
@@ -60,14 +66,12 @@ class MyAppState extends ChangeNotifier {
   void setAdherentPrecedent() {
     ListeAdherents.instance.setAdherentPrecedent();
     currentAd = ListeAdherents.instance.adherentCourant;
-    print("setAdherentPrecedent $currentAd");
     notifyListeners();
   }
 
   void setAdherentSuivant() {
     ListeAdherents.instance.setAdherentSuivant();
     currentAd = ListeAdherents.instance.adherentCourant;
-    print("setAdherentSuivant $currentAd");
     notifyListeners();
   }
 
@@ -95,6 +99,17 @@ class MyAppState extends ChangeNotifier {
 
   void deleteAdherentCourant() {
     ListeAdherents.instance.deleteAdherentCourant();
+    currentAd = ListeAdherents.instance.adherentCourant;
+    notifyListeners();
+  }
+
+  void majAdherentEdite() {
+    ListeAdherents.instance.majAdherentEdite(editAd);
+    notifyListeners();
+  }
+
+  void createAdherentEdite() {
+    ListeAdherents.instance.createAdherentEdite(editAd);
     currentAd = ListeAdherents.instance.adherentCourant;
     notifyListeners();
   }
@@ -145,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: Icon(Icons.calendar_month),
                     label: Text('Agenda'),
                   ),
-                   NavigationRailDestination(
+                  NavigationRailDestination(
                     icon: Icon(Icons.euro),
                     label: Text('Bon de sortie'),
                   ),
@@ -154,10 +169,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     label: Text('Paramètres'),
                   ),
                 ],
-                selectedIndex: selectedIndex, // ← Change to this.
+                selectedIndex: selectedIndex,
                 onDestinationSelected: (value) {
-                  print('selected: $value');
-                  // ↓ Replace print with this.
                   setState(() {
                     selectedIndex = value;
                   });
@@ -189,7 +202,6 @@ class GeneratorPage extends StatelessWidget {
     } else {
       icon = Icons.favorite_border;
     }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Liste adhérents',
@@ -202,128 +214,197 @@ class GeneratorPage extends StatelessWidget {
           children: [
             BarreNavigation(pair: pair),
             SizedBox(height: 10),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: ChampTexte(
-                    labelTextDecoration: "Mme,M",
-                    labelText: appState.currentAd.civilite,
-                  ),
-                ),
-                Flexible(
-                  flex: 5,
-                  child: ChampTexte(
-                    labelTextDecoration: "Nom",
-                    labelText: appState.currentAd.nom,
-                  ),
-                ),
-                Flexible(
-                  flex: 5,
-                  child: ChampTexte(
-                    labelTextDecoration: "Prenom",
-                    labelText: appState.currentAd.prenom,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 20),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(width: 20),
-                Flexible(
-                  flex: 2,
-                  child: ChampTexte(
-                    labelTextDecoration: "Numéro",
-                    labelText: appState.currentAd.noRue,
-                  ),
-                ),
-                Flexible(
-                  flex: 10,
-                  child: ChampTexte(
-                    labelTextDecoration: "Adresse",
-                    labelText: appState.currentAd.adresse,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: SizedBox(width: 20),
-                ),
-                Flexible(
-                  flex: 10,
-                  child: ChampTexte(
-                    labelTextDecoration: "Complement adresse",
-                    labelText: appState.currentAd.complementAdresse,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: SizedBox(width: 20),
-                ),
-                Flexible(
-                  flex: 5,
-                  child: ChampTexte(
-                    labelTextDecoration: "Code postal",
-                    labelText: appState.currentAd.codePostal,
-                  ),
-                ),
-                Flexible(
-                  flex: 5,
-                  child: ChampTexte(
-                    labelTextDecoration: "Commune",
-                    labelText: appState.currentAd.commune,
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 20),
-              ],
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: SizedBox(width: 20),
-                ),
-                Flexible(
-                  flex: 5,
-                  child: ChampTexte(
-                    labelTextDecoration: "Téléphone",
-                    labelText: appState.currentAd.noTelephone,
-                  ),
-                ),
-                Flexible(
-                  flex: 5,
-                  child: ChampTexte(
-                    labelTextDecoration: "@ mail",
-                    labelText: appState.currentAd.adresseMail,
-                  ),
-                ),
-              ],
+            Flexible(
+              //             fit: FlexFit.loose,
+              flex: 1,
+              child: FicheAdherent(
+                  enableEditBool: false, adherent: appState.currentAd),
             ),
             SizedBox(height: 10),
             BarreEdition(pair: pair),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FicheAdherent extends StatelessWidget {
+  final bool enableEditBool;
+  final Adherent adherent;
+  FicheAdherent(
+      {super.key, required this.enableEditBool, required this.adherent});
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 10),
+            Flexible(
+              //             fit: FlexFit.loose,
+              flex: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: ChampTexte(
+                      labelTextDecoration: "Mme,M",
+                      labelText: adherent.civilite,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setCivilite,
+                    ),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: ChampTexte(
+                      labelTextDecoration: "* Nom",
+                      labelText: adherent.nom,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setNom,
+                    ),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: ChampTexte(
+                      labelTextDecoration: "Prenom",
+                      labelText: adherent.prenom,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setPrenom,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 20),
+              ],
+            ),
+            Flexible(
+              //             fit: FlexFit.loose,
+              flex: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(width: 20),
+                  Flexible(
+                    flex: 2,
+                    child: ChampTexte(
+                      labelTextDecoration: "Numéro",
+                      labelText: adherent.noRue,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setNoRue,
+                    ),
+                  ),
+                  Flexible(
+                    flex: 10,
+                    child: ChampTexte(
+                      labelTextDecoration: "Adresse",
+                      labelText: adherent.adresse,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setAdresse,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              //             fit: FlexFit.loose,
+              flex: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: SizedBox(width: 20),
+                  ),
+                  Flexible(
+                    flex: 10,
+                    child: ChampTexte(
+                      labelTextDecoration: "Complement adresse",
+                      labelText: adherent.complementAdresse,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setComplementAdresse,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              //             fit: FlexFit.loose,
+              flex: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: SizedBox(width: 20),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: ChampTexte(
+                      labelTextDecoration: "Code postal",
+                      labelText: adherent.codePostal,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setCodePostal,
+                    ),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: ChampTexte(
+                      labelTextDecoration: "Commune",
+                      labelText: adherent.commune,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setCommune,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: 20),
+              ],
+            ),
+            Flexible(
+              //             fit: FlexFit.loose,
+              flex: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: SizedBox(width: 20),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: ChampTexte(
+                      labelTextDecoration: "* Téléphone",
+                      labelText: adherent.noTelephone,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setNoTelephone,
+                    ),
+                  ),
+                  Flexible(
+                    flex: 5,
+                    child: ChampTexte(
+                      labelTextDecoration: "@ mail",
+                      labelText: adherent.adresseMail,
+                      enableEdit: enableEditBool,
+                      callback: adherent.setAdresseMail,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
@@ -359,6 +440,163 @@ class FavoritesPage extends StatelessWidget {
   }
 }
 
+class ModificationFicheAdherent extends StatelessWidget {
+  final bool editTrueCreateFalse;
+  ModificationFicheAdherent({super.key, required this.editTrueCreateFalse});
+  @override
+  Widget build(BuildContext context) {
+    String titreAppBar = "";
+    var appState = context.watch<MyAppState>();
+    if (editTrueCreateFalse) {
+      titreAppBar = 'Modification de la fiche';
+      appState.editAd.copyAdherentFrom(appState.currentAd);
+    } else {
+      titreAppBar = 'Création de la fiche';
+      appState.editAd.copyAdherentFrom(Adherent("", "", ""));
+    }
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(titreAppBar),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            dialogConfirmation(context, appState, editTrueCreateFalse);
+          },
+        ),
+      ),
+      body: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              //             fit: FlexFit.loose,
+              flex: 1,
+              child: FicheAdherent(
+                enableEditBool: true,
+                adherent: appState.editAd,
+              ),
+            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    dialogConfirmation(context, appState, editTrueCreateFalse);
+                  },
+                  icon: Icon(Icons.delete_forever),
+                  label: Text('Annuler'),
+                  //  color: theme.colorScheme.primary,    // ← And also this.
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    dialogChampObligatoire(
+                        context, appState, editTrueCreateFalse);
+                  },
+                  iconAlignment: IconAlignment.end,
+                  icon: Icon(Icons.edit),
+                  label: Text('Sauvegarder'),
+                  //  color: theme.colorScheme.primary,    // ← And also this.
+                ),
+              ),
+            ]),
+          ]),
+    );
+  }
+}
+
+void dialogConfirmation(
+    BuildContext context, MyAppState appState, bool editTrueCreateFalse) {
+  //var appState = context.watch<MyAppState>();
+  // if ((appState.editAd.nom.isNotEmpty) &&
+  //    (appState.editAd.noTelephone.isNotEmpty))
+  {
+    if (!(appState.currentAd.isAdherentIdentique(appState.editAd))) {
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('La fiche d\'adhérent a été modifiée!'),
+          content: const Text('Conserver les modifications:'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text('Non!'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+
+                dialogChampObligatoire(context, appState, editTrueCreateFalse);
+
+//                appState.majAdherentEdite();
+                //               Navigator.pop(context);
+                //              Navigator.pop(context);
+              },
+              child: const Text('Oui!'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      Navigator.pop(context);
+    }
+  }
+//  } else {
+  // Ne passera jamais dans le else de dialogChampObligatoire,
+  // il y a un champ obligatoire de vide.
+  //  dialogChampObligatoire(context, appState);
+  //}
+}
+
+//-----------------------------------------------------------------------
+// Boite de dialogue avec gestion des champs obligatoires.
+//-----------------------------------------------------------------------
+void dialogChampObligatoire(
+    BuildContext context, MyAppState appState, editTrueCreateFalse) {
+  if ((appState.editAd.nom.isEmpty) || (appState.editAd.noTelephone.isEmpty)) {
+    String champACompleter = "";
+    if (appState.editAd.nom.isEmpty) {
+      champACompleter = "Nom";
+    } else {
+      champACompleter = "Numero de téléphone";
+    }
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: Text('Le champ $champACompleter doit être renseigné!'),
+        content: const Text('Reprendre les modifications ou abandonner:'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('Abandonner!'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('Reprendre!'),
+          ),
+        ],
+      ),
+    );
+  } else {
+    if (editTrueCreateFalse == true) {
+      appState.majAdherentEdite();
+    } else {
+      appState.createAdherentEdite();
+    }
+    Navigator.pop(context);
+  }
+}
+
 class BarreEdition extends StatelessWidget {
   // This controller will store the value of the search bar
   // final  TextEditingController _searchController = TextEditingController();
@@ -372,15 +610,9 @@ class BarreEdition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);       // ← Add this.
-    // ↓ Add this.
-//    final style = theme.textTheme.displayMedium!.copyWith(
-//      color: theme.colorScheme.onPrimary,
-//    );
-    var appState = context.watch<MyAppState>();
-    var myControllerTextFieldRechercheLocal =
-        appState.myControllerTextFieldRecherche;
 
+    var appState = context.watch<MyAppState>();
+  
     return Row(
         // ↓ Change this line.
         mainAxisAlignment: MainAxisAlignment.center,
@@ -388,29 +620,30 @@ class BarreEdition extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
-              onPressed: () => showDialog<String>(
-                context: context,
-                builder: (BuildContext context) => AlertDialog(
-                  title: const Text('Suppression de la fiche d\'adhérent'),
-                  content: const Text('La suppression est définitive!'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Annuler'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        print("Supprimer");
-                        appState.deleteAdherentCourant();
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Supprimer'),
-                    ),
-                  ],
-                ),
-              ),
+              onPressed: () {
+                showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) => AlertDialog(
+                    title: const Text('Suppression de la fiche d\'adhérent'),
+                    content: const Text('La suppression est définitive!'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Annuler'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          appState.deleteAdherentCourant();
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Supprimer'),
+                      ),
+                    ],
+                  ),
+                );
+              },
               icon: Icon(Icons.delete_forever),
               label: Text('Supprimer'),
               //                                    color: theme.colorScheme.primary,    // ← And also this.
@@ -420,8 +653,12 @@ class BarreEdition extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
               onPressed: () {
-                print("Modifier");
-                appState.setAdherentSuivant();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          ModificationFicheAdherent(editTrueCreateFalse: true)),
+                );
               },
               iconAlignment: IconAlignment.end,
               label: Text('Modifier'),
@@ -433,8 +670,12 @@ class BarreEdition extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
               onPressed: () {
-                print("Nouveau");
-                appState.setAdherentSuivant();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ModificationFicheAdherent(
+                          editTrueCreateFalse: false)),
+                );
               },
               iconAlignment: IconAlignment.end,
               label: Text('Nouveau'),
@@ -447,9 +688,7 @@ class BarreEdition extends StatelessWidget {
 }
 
 class BarreNavigation extends StatelessWidget {
-  // This controller will store the value of the search bar
-  // final  TextEditingController _searchController = TextEditingController();
-
+  
   BarreNavigation({
     super.key,
     required this.pair,
@@ -459,11 +698,7 @@ class BarreNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);       // ← Add this.
-    // ↓ Add this.
-//    final style = theme.textTheme.displayMedium!.copyWith(
-//      color: theme.colorScheme.onPrimary,
-//    );
+
     var appState = context.watch<MyAppState>();
     var myControllerTextFieldRechercheLocal =
         appState.myControllerTextFieldRecherche;
@@ -473,12 +708,10 @@ class BarreNavigation extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton.icon(
           onPressed: () {
-            print("Précedent");
             appState.setAdherentPrecedent();
           },
           icon: Icon(Icons.arrow_back_ios),
           label: Text('Précédent'),
-          //                                    color: theme.colorScheme.primary,    // ← And also this.
         ),
       ),
       Expanded(
@@ -486,10 +719,6 @@ class BarreNavigation extends StatelessWidget {
           children: [
             TextField(
               controller: myControllerTextFieldRechercheLocal,
-              //             onChanged: (text) {
-              //               print('First text field: $text (${text.characters.length})');
-              //               appState.searchStrinInName(text);
-              //             },
               decoration: InputDecoration(
                 hintText: 'Rechercher...',
                 // Add a clear button to the search bar
@@ -522,26 +751,32 @@ class BarreNavigation extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton.icon(
           onPressed: () {
-            print("Suivant");
             appState.setAdherentSuivant();
           },
           iconAlignment: IconAlignment.end,
           label: Text('Suivant'),
           icon: Icon(Icons.arrow_forward_ios),
-          //                                    color: theme.colorScheme.primary,    // ← And also this.
         ),
       ),
     ]);
   }
 }
+//----------------------------------------------------------------
+// class ChampTexte
+//----------------------------------------------------------------
 
 class ChampTexte extends StatelessWidget {
   final String labelText;
   final String labelTextDecoration;
+  final bool enableEdit;
+  void Function(String) callback;
 
   ChampTexte({
+    super.key,
     required this.labelText,
     required this.labelTextDecoration,
+    required this.enableEdit,
+    required this.callback,
   });
 
   @override
@@ -549,10 +784,12 @@ class ChampTexte extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
-        //                  obscureText: true,
-        enabled: false, // Rend le TextField non éditable
+        enabled: enableEdit, // false rend le TextField non éditable
         controller: TextEditingController(text: labelText),
-        //      onChanged: onTextChanged,
+        onChanged: (text) {
+          callback(text);
+          //print('$labelTextDecoration : $text');
+        },
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: labelTextDecoration,
