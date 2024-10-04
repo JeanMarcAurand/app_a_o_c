@@ -1,6 +1,6 @@
 # aA_O_C
 
-A new Flutter project.
+Aplication pour l'Association des Oleicukteurs de Callian.
 
 ## Getting Started
 
