@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
+import 'package:intl/intl.dart';
 
 class Adherent {
   Adherent(this._civilite, this._nom, this._prenom);
@@ -102,28 +102,54 @@ class Adherent {
     _commune = value;
   }
 
-  String _noTelephone = "";
-
-  String get noTelephone => _noTelephone;
-
-  set noTelephone(String value) {
-    _noTelephone = value;
+  String _noTelephoneFixe = "";
+  String get noTelephoneFixe => _noTelephoneFixe;
+  set noTelephoneFixe(String value) {
+    _noTelephoneFixe = value;
   }
 
-  void setNoTelephone(String value) {
-    _noTelephone = value;
+  void setNoTelephoneFixe(String value) {
+    _noTelephoneFixe = value;
+  }
+
+  String _noTelephonePortable = "";
+  String get noTelephonePortable => _noTelephonePortable;
+  set noTelephonePortable(String value) {
+    _noTelephonePortable = value;
+  }
+
+  void setNoTelephonePortable(String value) {
+    _noTelephonePortable = value;
   }
 
   String _adresseMail = "";
-
   String get adresseMail => _adresseMail;
-
   set adresseMail(String value) {
     _adresseMail = value;
   }
 
   void setAdresseMail(String value) {
     _adresseMail = value;
+  }
+
+  String _dateDerniereMAJ = "";
+  String get dateDerniereMAJ => _dateDerniereMAJ;
+  set dateDerniereMAJ(String value) {
+    _dateDerniereMAJ = value;
+  }
+
+  void setDateDerniereMAJ(String value) {
+    _dateDerniereMAJ = value;
+  }
+
+  String _sourceDerniereMAJ = "";
+  String get sourceDerniereMAJ => _sourceDerniereMAJ;
+  set sourceDerniereMAJ(String value) {
+    _sourceDerniereMAJ = value;
+  }
+
+  void setSourceDerniereMAJ(String value) {
+    _sourceDerniereMAJ = value;
   }
 
   void copyAdherentFrom(Adherent adherentSource) {
@@ -135,8 +161,11 @@ class Adherent {
     complementAdresse = adherentSource.complementAdresse;
     codePostal = adherentSource.codePostal;
     commune = adherentSource.commune;
-    noTelephone = adherentSource.noTelephone;
+    noTelephoneFixe = adherentSource.noTelephoneFixe;
+    noTelephonePortable = adherentSource.noTelephonePortable;
     adresseMail = adherentSource.adresseMail;
+    dateDerniereMAJ = adherentSource.dateDerniereMAJ;
+    sourceDerniereMAJ = adherentSource.sourceDerniereMAJ;
   }
 
   bool isAdherentIdentique(Adherent adherent) {
@@ -148,8 +177,11 @@ class Adherent {
         (complementAdresse == adherent.complementAdresse) &&
         (codePostal == adherent.codePostal) &&
         (commune == adherent.commune) &&
-        (noTelephone == adherent.noTelephone) &&
-        (adresseMail == adherent.adresseMail);
+        (noTelephoneFixe == adherent.noTelephoneFixe) &&
+        (noTelephonePortable == adherent.noTelephonePortable) &&
+        (adresseMail == adherent.adresseMail) &&
+        (dateDerniereMAJ == adherent.dateDerniereMAJ) &&
+        (sourceDerniereMAJ == adherent.sourceDerniereMAJ);
   }
 
   @override
@@ -158,8 +190,11 @@ class Adherent {
             _noRue:$_noRue _adresse:$_adresse
             _complementAdresse:$_complementAdresse
             _codePostal:$_codePostal _commune:$_commune
-            _noTelephone:$_noTelephone 
-            _adresseMail:$_adresseMail)""";
+            _noTelephoneFixe:$_noTelephoneFixe 
+            _noTelephonePortable:$_noTelephonePortable
+            _adresseMail:$_adresseMail
+            _dateDerniereMAJ:$_dateDerniereMAJ
+            _sourceDerniereMAJ:$_sourceDerniereMAJ )""";
   }
 }
 
@@ -199,7 +234,7 @@ class ListeAdherents {
           'Les bas adrechs$indice';
       _listeAdherentsComplet[indice].codePostal = '8344$indice';
       _listeAdherentsComplet[indice].commune = 'Callian$indice';
-      _listeAdherentsComplet[indice].noTelephone = '06 12 34 56 7$indice';
+      _listeAdherentsComplet[indice].noTelephoneFixe = '06 12 34 56 7$indice';
       _listeAdherentsComplet[indice].adresseMail =
           'espalongo$indice.stanley@boitemail.fr';
     }
@@ -268,11 +303,11 @@ class ListeAdherents {
         adherent.complementAdresse = row[firstRow.indexOf("Rue")];
         adherent.codePostal = row[firstRow.indexOf("Code")].toString();
         adherent.commune = row[firstRow.indexOf("Ville")];
-        adherent.noTelephone = row[firstRow.indexOf("Tel portable")];
-        if (adherent.noTelephone.isEmpty) {
-          adherent.noTelephone = row[firstRow.indexOf("Tel fixe")];
-        }
+        adherent.noTelephonePortable = row[firstRow.indexOf("Tel portable")];
+        adherent.noTelephoneFixe = row[firstRow.indexOf("Tel fixe")];
         adherent.adresseMail = row[firstRow.indexOf("adresse mail")];
+        adherent.dateDerniereMAJ = row[firstRow.indexOf("Derniere maj")];
+        adherent.sourceDerniereMAJ = row[firstRow.indexOf("Source")];
         _listeAdherentsComplet.add(adherent);
       }
     }
@@ -280,6 +315,56 @@ class ListeAdherents {
     _listeAdherentsCourant = _listeAdherentsComplet;
     _indiceAdherentCourant = 0;
     adherentCourant = _listeAdherentsComplet[_indiceAdherentCourant];
+  }
+
+  Future<void> ecritureFichierAdherents() async {
+    // Obtenir le répertoire où enregistrer le fichier
+    final path = await _localPath;
+// construit la liste.
+    List<String> firstRow = [
+      "Civilité",
+      "Nom",
+      "Prénom",
+      "No",
+      "Lieu",
+      "Rue",
+      "Code",
+      "Ville",
+      "Tel portable",
+      "Tel fixe",
+      "adresse mail",
+      "Derniere maj",
+      "Source"
+    ];
+
+    List<List<String>> adherents = [firstRow];
+    for (Adherent adherent in _listeAdherentsComplet) {
+      adherents.add([
+        adherent.civilite,
+        adherent.nom,
+        adherent.prenom,
+        adherent.noRue,
+        adherent.adresse,
+        adherent.complementAdresse,
+        adherent.codePostal,
+        adherent.commune,
+        adherent.noTelephonePortable,
+        adherent.noTelephoneFixe,
+        adherent.adresseMail,
+        adherent.dateDerniereMAJ,
+        adherent.sourceDerniereMAJ,
+      ]);
+    }
+
+    // Convertir les données en format CSV
+    String csvData =
+        const ListToCsvConverter(fieldDelimiter: ';').convert(adherents);
+
+    // Écrire les données dans le fichier
+    final file = await _localFile;
+    await file.writeAsString(csvData);
+
+    print('Fichier CSV sauvegardé à : $path');
   }
 
 // Instance unique de la classe
@@ -335,7 +420,7 @@ class ListeAdherents {
     //    'searchStingInName adherentCourant:$adherentCourant\n listeAdherents:$listeAdherentsCourant');
   }
 
-  void deleteAdherentCourant() {
+  Future<void> deleteAdherentCourant() async {
     _listeAdherentsComplet.remove(adherentCourant);
     _listeAdherentsCourant.remove(adherentCourant);
     if (_indiceAdherentCourant > 0) {
@@ -346,12 +431,16 @@ class ListeAdherents {
       _indiceAdherentCourant = 0;
     }
     adherentCourant = _listeAdherentsCourant[_indiceAdherentCourant];
+
+    await ecritureFichierAdherents();
   }
 
-  void createAdherentEdite(Adherent adherent) {
+  Future<void> createAdherentEdite(Adherent adherent) async {
     Adherent nouvelAdherent = Adherent("", "", "");
     nouvelAdherent.copyAdherentFrom(adherent);
-
+    nouvelAdherent.dateDerniereMAJ =
+        DateFormat('dd/MM/yyyy').format(DateTime.now());
+    nouvelAdherent.sourceDerniereMAJ = "créé aA_O_C";
     _listeAdherentsComplet.add(nouvelAdherent);
     _listeAdherentsComplet
         .sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
@@ -372,13 +461,20 @@ class ListeAdherents {
         adherentCourant = nouvelAdherent;
       }
     }
+
+    await ecritureFichierAdherents();
   }
 
-  void majAdherentEdite(Adherent adherent) {
+  Future<void> majAdherentEdite(Adherent adherent) async {
     adherentCourant.copyAdherentFrom(adherent);
+    adherentCourant.dateDerniereMAJ =
+        DateFormat('dd/MM/yyyy').format(DateTime.now());
+    adherentCourant.sourceDerniereMAJ = "modifié aA_O_C";
     _listeAdherentsCourant
         .sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
     _indiceAdherentCourant = _listeAdherentsCourant.indexOf(adherentCourant);
+
+    await ecritureFichierAdherents();
   }
 
   @override

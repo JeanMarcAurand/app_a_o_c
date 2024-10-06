@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'liste_adherents.dart';
 
 Future<void> main() async {
-    ListeAdherents instanceListeAdherent = ListeAdherents.instance;
-      await instanceListeAdherent.lectureFichierAdherents();
+  ListeAdherents instanceListeAdherent = ListeAdherents.instance;
+  await instanceListeAdherent.lectureFichierAdherents();
 
   runApp(MyApp());
 }
@@ -43,7 +43,6 @@ class MyAppState extends ChangeNotifier {
       //    .text); // Par exemple, afficher le texte dans la console
       searchStrinInName(myControllerTextFieldRecherche.text);
     });
-
   }
   // ↓ Add this.
   void getNext() {
@@ -194,14 +193,7 @@ class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var pair = appState.current;
 
-    IconData icon;
-    if (appState.favorites.contains(pair)) {
-      icon = Icons.favorite;
-    } else {
-      icon = Icons.favorite_border;
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Liste adhérents',
@@ -212,7 +204,7 @@ class GeneratorPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BarreNavigation(pair: pair),
+            BarreNavigation(),
             SizedBox(height: 10),
             Flexible(
               //             fit: FlexFit.loose,
@@ -221,7 +213,7 @@ class GeneratorPage extends StatelessWidget {
                   enableEditBool: false, adherent: appState.currentAd),
             ),
             SizedBox(height: 10),
-            BarreEdition(pair: pair),
+            BarreEdition(),
           ],
         ),
       ),
@@ -236,7 +228,19 @@ class FicheAdherent extends StatelessWidget {
       {super.key, required this.enableEditBool, required this.adherent});
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    var callbackTelephone = adherent.setNoTelephonePortable;
+    var labelTextTelephone = adherent.noTelephonePortable;
+    print(adherent);
+    if (adherent.noTelephonePortable.isEmpty) {
+      callbackTelephone = adherent.setNoTelephoneFixe;
+      labelTextTelephone = adherent.noTelephoneFixe;
+      print('tel fixe');
+    } else {
+      callbackTelephone = adherent.setNoTelephonePortable;
+      labelTextTelephone = adherent.noTelephonePortable;
+
+      print('tel prtable');
+    }
 
     return Scaffold(
       body: Center(
@@ -388,9 +392,9 @@ class FicheAdherent extends StatelessWidget {
                     flex: 5,
                     child: ChampTexte(
                       labelTextDecoration: "* Téléphone",
-                      labelText: adherent.noTelephone,
+                      labelText: labelTextTelephone,
                       enableEdit: enableEditBool,
-                      callback: adherent.setNoTelephone,
+                      callback: callbackTelephone,
                     ),
                   ),
                   Flexible(
@@ -558,7 +562,8 @@ void dialogConfirmation(
 //-----------------------------------------------------------------------
 void dialogChampObligatoire(
     BuildContext context, MyAppState appState, editTrueCreateFalse) {
-  if ((appState.editAd.nom.isEmpty) || (appState.editAd.noTelephone.isEmpty)) {
+  if ((appState.editAd.nom.isEmpty) ||
+      (appState.editAd.noTelephoneFixe.isEmpty)) {
     String champACompleter = "";
     if (appState.editAd.nom.isEmpty) {
       champACompleter = "Nom";
@@ -603,16 +608,12 @@ class BarreEdition extends StatelessWidget {
 
   BarreEdition({
     super.key,
-    required this.pair,
   });
-
-  final WordPair pair;
 
   @override
   Widget build(BuildContext context) {
-
     var appState = context.watch<MyAppState>();
-  
+
     return Row(
         // ↓ Change this line.
         mainAxisAlignment: MainAxisAlignment.center,
@@ -688,17 +689,12 @@ class BarreEdition extends StatelessWidget {
 }
 
 class BarreNavigation extends StatelessWidget {
-  
   BarreNavigation({
     super.key,
-    required this.pair,
   });
-
-  final WordPair pair;
 
   @override
   Widget build(BuildContext context) {
-
     var appState = context.watch<MyAppState>();
     var myControllerTextFieldRechercheLocal =
         appState.myControllerTextFieldRecherche;
@@ -769,7 +765,7 @@ class ChampTexte extends StatelessWidget {
   final String labelText;
   final String labelTextDecoration;
   final bool enableEdit;
-  void Function(String) callback;
+  final void Function(String) callback;
 
   ChampTexte({
     super.key,
