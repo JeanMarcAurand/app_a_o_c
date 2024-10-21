@@ -152,6 +152,22 @@ class Adherent {
     _sourceDerniereMAJ = value;
   }
 
+  int _identificateur = 0;
+
+  int get identificateur => _identificateur;
+
+  set identificateur(int value) {
+    _identificateur = value;
+  }
+
+  String _dateCreation = "";
+
+  String get dateCreation => _dateCreation;
+
+  set dateCreation(String value) {
+    _dateCreation = value;
+  }
+
   void copyAdherentFrom(Adherent adherentSource) {
     civilite = adherentSource.civilite;
     nom = adherentSource.nom;
@@ -166,6 +182,8 @@ class Adherent {
     adresseMail = adherentSource.adresseMail;
     dateDerniereMAJ = adherentSource.dateDerniereMAJ;
     sourceDerniereMAJ = adherentSource.sourceDerniereMAJ;
+    identificateur = adherentSource.identificateur;
+    dateCreation = adherentSource.dateCreation;
   }
 
   bool isAdherentIdentique(Adherent adherent) {
@@ -181,7 +199,9 @@ class Adherent {
         (noTelephonePortable == adherent.noTelephonePortable) &&
         (adresseMail == adherent.adresseMail) &&
         (dateDerniereMAJ == adherent.dateDerniereMAJ) &&
-        (sourceDerniereMAJ == adherent.sourceDerniereMAJ);
+        (sourceDerniereMAJ == adherent.sourceDerniereMAJ) &&
+        (identificateur == adherent.identificateur) &&
+        (dateCreation == adherent.dateCreation);
   }
 
   @override
@@ -193,8 +213,10 @@ class Adherent {
             _noTelephoneFixe:$_noTelephoneFixe 
             _noTelephonePortable:$_noTelephonePortable
             _adresseMail:$_adresseMail
+            _dateCreation:$_dateCreation
             _dateDerniereMAJ:$_dateDerniereMAJ
-            _sourceDerniereMAJ:$_sourceDerniereMAJ )""";
+            _sourceDerniereMAJ:$_sourceDerniereMAJ 
+            _identificateur:$_identificateur)""";
   }
 }
 
@@ -206,51 +228,39 @@ class ListeAdherents {
   List<Adherent> _listeAdherentsCourant = [];
   List<Adherent> get listeAdherentsCourant => _listeAdherentsCourant;
 
-  // Indice dans la liste courante.
-  int _indiceAdherentCourant = 0;
-  Adherent _adherentCourant = Adherent("", "", "");
-
-  Adherent get adherentCourant => _adherentCourant;
-
-  set adherentCourant(Adherent value) {
-    _adherentCourant = value;
-  }
-
   Adherent adherentVide = Adherent("", "", "");
   String _dernierTextRecherche = "";
 
   // Constructeur privé avec initialisations
   ListeAdherents._privateConstructor() {
     // Init avant lecture fichier.
-    _listeAdherentsComplet.add(Adherent("M", "Espalongo", "Stanley"));
-    _listeAdherentsComplet.add(Adherent("Mme", "Espalongo", "Pierre"));
-    _listeAdherentsComplet.add(Adherent("Mme ou M", "Toto", "Paul"));
-    _listeAdherentsComplet.add(Adherent(" ", "Titi", "Jean"));
-    _listeAdherentsComplet.add(Adherent("M", "Tata", "Jacques"));
     for (int indice = 0; indice < _listeAdherentsComplet.length; indice++) {
+      _listeAdherentsComplet
+          .add(Adherent("M$indice", "Exemple$indice", "Ex$indice-emple"));
       _listeAdherentsComplet[indice].noRue = '$indice';
-      _listeAdherentsComplet[indice].adresse = 'rue longue$indice';
+      _listeAdherentsComplet[indice].adresse =
+          'chemin du clos$indice des adrechs';
       _listeAdherentsComplet[indice].complementAdresse =
           'Les bas adrechs$indice';
       _listeAdherentsComplet[indice].codePostal = '8344$indice';
       _listeAdherentsComplet[indice].commune = 'Callian$indice';
       _listeAdherentsComplet[indice].noTelephoneFixe = '06 12 34 56 7$indice';
       _listeAdherentsComplet[indice].adresseMail =
-          'espalongo$indice.stanley@boitemail.fr';
+          'exemple$indice.ex$indice-emple@boitemail.fr';
+      _listeAdherentsComplet[indice]._dateCreation = "01/01/197$indice";
+      _listeAdherentsComplet[indice]._dateDerniereMAJ = "02/01/197$indice";
+      _listeAdherentsComplet[indice].sourceDerniereMAJ = "JMA$indice";
+      _listeAdherentsComplet[indice]._identificateur = 1728777500 + indice;
     }
 
 //    lectureFichierAdherents();
 
 // Init au debut.
     _listeAdherentsCourant = _listeAdherentsComplet;
-    _indiceAdherentCourant = 0;
-    adherentCourant = _listeAdherentsComplet[_indiceAdherentCourant];
   }
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
-    final path = directory.path;
-    print('Path: $path');
     return directory.path;
   }
 
@@ -303,23 +313,22 @@ class ListeAdherents {
         adherent.complementAdresse = row[firstRow.indexOf("Rue")];
         adherent.codePostal = row[firstRow.indexOf("Code")].toString();
         adherent.commune = row[firstRow.indexOf("Ville")];
-        adherent.noTelephonePortable = row[firstRow.indexOf("Tel portable")];
-        adherent.noTelephoneFixe = row[firstRow.indexOf("Tel fixe")];
+        adherent.noTelephonePortable =
+            row[firstRow.indexOf("Tel portable")].toString();
+        adherent.noTelephoneFixe = row[firstRow.indexOf("Tel fixe")].toString();
         adherent.adresseMail = row[firstRow.indexOf("adresse mail")];
         adherent.dateDerniereMAJ = row[firstRow.indexOf("Derniere maj")];
         adherent.sourceDerniereMAJ = row[firstRow.indexOf("Source")];
+        adherent.dateCreation = row[firstRow.indexOf("Date création")];
+        adherent.identificateur = row[firstRow.indexOf("Identificateur")];
         _listeAdherentsComplet.add(adherent);
       }
     }
     // Init au debut.
     _listeAdherentsCourant = _listeAdherentsComplet;
-    _indiceAdherentCourant = 0;
-    adherentCourant = _listeAdherentsComplet[_indiceAdherentCourant];
   }
 
   Future<void> ecritureFichierAdherents() async {
-    // Obtenir le répertoire où enregistrer le fichier
-    final path = await _localPath;
 // construit la liste.
     List<String> firstRow = [
       "Civilité",
@@ -333,6 +342,8 @@ class ListeAdherents {
       "Tel portable",
       "Tel fixe",
       "adresse mail",
+      "Identificateur",
+      "Date création",
       "Derniere maj",
       "Source"
     ];
@@ -351,6 +362,8 @@ class ListeAdherents {
         adherent.noTelephonePortable,
         adherent.noTelephoneFixe,
         adherent.adresseMail,
+        adherent.identificateur.toString(),
+        adherent.dateCreation,
         adherent.dateDerniereMAJ,
         adherent.sourceDerniereMAJ,
       ]);
@@ -364,13 +377,13 @@ class ListeAdherents {
     final file = await _localFile;
     await file.writeAsString(csvData);
 
-    print('Fichier CSV sauvegardé à : $path');
+    print('Fichier CSV sauvegardé à : $_localFile');
   }
 
 // Instance unique de la classe
   static final ListeAdherents _instance = ListeAdherents._privateConstructor();
   static ListeAdherents get instance => _instance;
-
+/*
   void setAdherentPrecedent() {
     if (_listeAdherentsCourant.isNotEmpty) {
       _indiceAdherentCourant =
@@ -398,11 +411,10 @@ class ListeAdherents {
     //print(
     //    'setAdherentSuivant adherentCourant:$adherentCourant\n listeAdherents:$listeAdherentsCourant');
   }
-
+*/
   void searchStingInName(String text) {
     _dernierTextRecherche = text;
     _listeAdherentsRecherche.clear();
-    _indiceAdherentCourant = 0;
 
     for (var adher in _listeAdherentsComplet) {
       if (adher.nom.toLowerCase().contains(text.toLowerCase())) {
@@ -414,42 +426,34 @@ class ListeAdherents {
     }
 
     _listeAdherentsCourant = _listeAdherentsRecherche;
-    adherentCourant = _listeAdherentsCourant[_indiceAdherentCourant];
-
     //print(
     //    'searchStingInName adherentCourant:$adherentCourant\n listeAdherents:$listeAdherentsCourant');
   }
 
-  Future<void> deleteAdherentCourant() async {
-    _listeAdherentsComplet.remove(adherentCourant);
-    _listeAdherentsCourant.remove(adherentCourant);
-    if (_indiceAdherentCourant > 0) {
-      _indiceAdherentCourant--;
-    }
+  Future<void> deleteAdherent(Adherent adherent) async {
+    _listeAdherentsComplet.remove(adherent);
+    _listeAdherentsCourant.remove(adherent);
+
     if (_listeAdherentsCourant.isEmpty) {
       _listeAdherentsCourant.add(adherentVide);
-      _indiceAdherentCourant = 0;
     }
-    adherentCourant = _listeAdherentsCourant[_indiceAdherentCourant];
-
     await ecritureFichierAdherents();
   }
 
   Future<void> createAdherentEdite(Adherent adherent) async {
     Adherent nouvelAdherent = Adherent("", "", "");
     nouvelAdherent.copyAdherentFrom(adherent);
-    nouvelAdherent.dateDerniereMAJ =
+    nouvelAdherent.dateCreation =
         DateFormat('dd/MM/yyyy').format(DateTime.now());
+    nouvelAdherent.dateDerniereMAJ = nouvelAdherent.dateCreation;
+    nouvelAdherent.identificateur =
+        DateTime.now().difference(DateTime.utc(1970, 1, 1)).inSeconds;
     nouvelAdherent.sourceDerniereMAJ = "créé aA_O_C";
     _listeAdherentsComplet.add(nouvelAdherent);
     _listeAdherentsComplet
         .sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
 
-    if (_listeAdherentsComplet == _listeAdherentsCourant) {
-      // On n'est pas dans un mode de recherche.
-      _indiceAdherentCourant = _listeAdherentsCourant.indexOf(nouvelAdherent);
-      adherentCourant = nouvelAdherent;
-    } else {
+    if (_listeAdherentsComplet != _listeAdherentsCourant) {
       // On est dans un mode de recherche.
       if (nouvelAdherent.nom
           .toLowerCase()
@@ -457,28 +461,25 @@ class ListeAdherents {
         _listeAdherentsCourant.add(nouvelAdherent);
         _listeAdherentsCourant
             .sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
-        _indiceAdherentCourant = _listeAdherentsCourant.indexOf(nouvelAdherent);
-        adherentCourant = nouvelAdherent;
       }
     }
 
     await ecritureFichierAdherents();
   }
 
-  Future<void> majAdherentEdite(Adherent adherent) async {
-    adherentCourant.copyAdherentFrom(adherent);
-    adherentCourant.dateDerniereMAJ =
-        DateFormat('dd/MM/yyyy').format(DateTime.now());
-    adherentCourant.sourceDerniereMAJ = "modifié aA_O_C";
+  Future<void> majAdherentEdite(
+      Adherent editAd, Adherent localCurrentAd) async {
+    editAd.dateDerniereMAJ = DateFormat('dd/MM/yyyy').format(DateTime.now());
+    editAd.sourceDerniereMAJ = "modifié aA_O_C";
+    localCurrentAd.copyAdherentFrom(editAd);
     _listeAdherentsCourant
         .sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
-    _indiceAdherentCourant = _listeAdherentsCourant.indexOf(adherentCourant);
 
     await ecritureFichierAdherents();
   }
 
   @override
   String toString() {
-    return 'ListeAdherents( indiceAdherentCourant:$_indiceAdherentCourant adherentCourant: $adherentCourant)';
+    return 'ListeAdherents( )';
   }
 }
