@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:aA_O_C/main.dart';
 import 'liste_adherents.dart';
 
@@ -21,9 +22,114 @@ class AdherentsPage extends StatelessWidget {
           children: [
             BarreNavigation(),
             SizedBox(height: 10),
-            AdherentsListScreen(),
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(
+                    // Empêche l'erreur en donnant une hauteur disponible.
+                    child: Column(
+                      children: [
+                        AdherentsListScreen(),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    // Empêche l'erreur en donnant une hauteur disponible.
+                    child: Column(
+                      children: [
+                        QRCodeWidget(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class QRCodeWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    Adherent localCurrentAd = appState.adherentQRCode;
+    String texteTel = "Pas de numéro de tel pour cet adhérent.";
+    String noTel = "";
+    if (localCurrentAd.noTelephonePortable.isNotEmpty) {
+      noTel = 'tel:${localCurrentAd.noTelephonePortable}';
+      texteTel =
+          ' Pour contacter le ${localCurrentAd.noTelephonePortable} flascher:';
+    } else {
+      if (localCurrentAd.noTelephoneFixe.isNotEmpty) {
+        noTel = 'tel:${localCurrentAd.noTelephoneFixe}';
+        texteTel =
+            ' Pour contacter le ${localCurrentAd.noTelephoneFixe} flascher:';
+      } else {
+        noTel = "";
+        texteTel = " Pas de numéro de téléphone pour cet adhérent.";
+      }
+    }
+    String texteMail = " Pas d'adresse mail pour cet adhérent.";
+    String mail = "";
+    if (localCurrentAd.adresseMail.isNotEmpty) {
+      mail =
+          'mailto:${localCurrentAd.adresseMail}?subject=Moulin%20de%20Callian.&body=%20%20Bonjour!%0A%0A%0A%0A%20%20Le moulin de Callian%0A';
+      texteMail = ' Pour contacter ${localCurrentAd.adresseMail} flascher:';
+    } else {
+      mail = "";
+      texteMail = " Pas d'adresse mail pour cet adhérent.";
+    }
+
+    return Expanded(
+      // Empêche l'erreur en donnant une hauteur disponible.
+      child: ListView(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 20),
+              Text(
+                '${localCurrentAd.civilite} ${localCurrentAd.nom}',
+                style: TextStyle(fontSize: 24),
+              ),
+              Text(localCurrentAd.adresse),
+              Text('${localCurrentAd.codePostal} ${localCurrentAd.commune}'),
+              SizedBox(height: 20),
+              Text(texteTel),
+              if (noTel.isNotEmpty)
+                QrImageView(
+                  data: noTel,
+                  version: QrVersions.auto,
+                  size: 100,
+                  gapless: false,
+                ),
+              SizedBox(height: 20),
+              Text(texteMail),
+              if (mail.isNotEmpty)
+                QrImageView(
+                  data: mail,
+                  version: QrVersions.auto,
+                  size: 200,
+                  gapless: false,
+                ),
+
+              /*       ElevatedButton(
+          onPressed: () async {
+            if (await canLaunch(phoneNumber)) {
+              await launch(phoneNumber);
+            } else {
+              throw 'Could not launch $phoneNumber';
+            }
+          },
+          child: Text('Appeler le numéro'),
+        ),
+        */
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -53,14 +159,15 @@ class AdherentsListScreen extends StatelessWidget {
                   onTap: () {
                     // Action à réaliser lors de l'appui
                     print('Card with ListTile tapped');
-                    Navigator.push(
+                    appState.majAdherentQRCode(adherent);
+/*                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) {
                         return ModificationFicheAdherent(
                             localCurrentAd: adherent,
                             editCreateDisplay: EditCreateDisplay.edit);
                       }),
-                    );
+                    );*/
                   },
                   /*(context) {
                         return ModificationFicheAdherent(
@@ -68,7 +175,7 @@ class AdherentsListScreen extends StatelessWidget {
                             editCreateDisplay: EditCreateDisplay.edit);
                       },*/
                   child: ListTile(
-                    leading: Icon(Icons.contact_phone, size: 56.0),
+                    leading: Icon(Icons.contact_phone, size: 28.0),
                     title: Text('${adherent.nom} ${adherent.prenom}'),
                     subtitle: Text(labelTextTelephone),
 
@@ -818,3 +925,86 @@ class ChampTexte extends StatelessWidget {
     );
   }
 }
+
+/*
+class ChampTexte extends StatefulWidget {
+  final String labelText;
+  final String labelTextDecoration;
+  final bool enableEdit;
+  final void Function(String) callback;
+  final String hint;
+  final String mask;
+  final String? Function(String?)? validation;
+
+  ChampTexte({
+    super.key,
+    required this.labelText,
+    required this.labelTextDecoration,
+    required this.enableEdit,
+    required this.callback,
+    required this.validation,
+    this.hint = '',
+    this.mask = '',
+  });
+
+  @override
+  State<ChampTexte> createState() => _ChampTexteState();
+}
+
+class _ChampTexteState extends State<ChampTexte> {
+  // Contrôleur de texte pour gérer les entrées de l'utilisateur.
+  late TextEditingController _textController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialisation du contrôleur de texte avec le texte initial.
+    _textController = TextEditingController(text: widget.labelText);
+  }
+
+  @override
+  void dispose() {
+    // Nettoyage du contrôleur de texte.
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        // Activation ou désactivation de l'édition en fonction de enableEdit.
+        enabled: widget.enableEdit,
+        controller: _textController,
+        // Appel de la fonction callback lors d'un changement de texte.
+        onChanged: (text) {
+          widget.callback(text);
+        },
+        inputFormatters: [
+          // Application du masque de saisie.
+          MaskTextInputFormatter(
+            mask: widget.mask,
+            initialText: widget.labelText,
+            type: MaskAutoCompletionType.eager,
+          ),
+        ],
+        // Validation personnalisée de l'entrée.
+        validator: widget.validation,
+        decoration: InputDecoration(
+          hintText: widget.hint,
+          hintStyle: const TextStyle(color: Colors.grey),
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.green)),
+          border: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey)),
+          errorBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.red)),
+          labelText: widget.labelTextDecoration,
+        ),
+        style: TextStyle(color: Colors.black),
+      ),
+    );
+  }
+}
+*/

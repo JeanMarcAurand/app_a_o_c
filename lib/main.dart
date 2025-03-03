@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'liste_adherents.dart';
 import 'adherents_page.dart';
+import 'agenda.dart';
 import 'agenda_page.dart';
 import 'parametres.dart';
 import 'parametres_page.dart';
 
 Future<void> main() async {
   Parametres instanceParametres = Parametres.instance;
+
   await instanceParametres.lectureFichierParametres();
   await instanceParametres.ecritureFichierParametres();
+
+  Agenda.instance.setAnneeAgenda(Parametres.instance.anneeFichierAgenda);
 
   ListeAdherents instanceListeAdherent = ListeAdherents.instance;
   await instanceListeAdherent.lectureFichierAdherents();
@@ -40,6 +44,7 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   Adherent editAd = Adherent("", "", "");
+  Adherent adherentQRCode = ListeAdherents.instance.listeAdherentsCourant[0];
 
   TextEditingController myControllerTextFieldRecherche =
       TextEditingController();
@@ -66,6 +71,11 @@ class MyAppState extends ChangeNotifier {
     } else {
       favorites.add(current);
     }
+    notifyListeners();
+  }
+
+  void majParametresNomFichierAdherent(String text) {
+    Parametres.instance.nomFichierAdherents = text;
     notifyListeners();
   }
 
@@ -103,6 +113,12 @@ class MyAppState extends ChangeNotifier {
     ListeAdherents.instance.createAdherentEdite(editAd);
     notifyListeners();
   }
+
+void majAdherentQRCode(Adherent localCurrentAd) {
+    adherentQRCode =  localCurrentAd;
+    notifyListeners();
+  }
+
 }
 
 class MyHomePage extends StatefulWidget {

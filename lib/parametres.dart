@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:convert';
 
 import 'package:path_provider/path_provider.dart';
-import 'package:csv/csv.dart';
-import 'package:intl/intl.dart';
 
 class Parametres {
   Map<String, dynamic> _mapDesParametres = {};
@@ -34,11 +31,19 @@ class Parametres {
     _mapDesParametres["nomFichierAdherents"] = value;
   }
 
+  int get anneeFichierAgenda {
+    return _mapDesParametres["anneeFichierAgenda"];
+  }
+
+  set anneeFichierAgenda(int value) {
+    _mapDesParametres["anneeFichierAgenda"] = value;
+  }
+
   Parametres();
   // Constructeur privé avec initialisations
   Parametres._privateConstructor() {
     // Init avant lecture fichier.
-
+    anneeFichierAgenda = 2024;
     nomFichierAdherents =
         "C:/Users/jean-/OneDrive/Documents/moulinDeCallianAdhérentsMai2024.csv";
     poidsMotteMax = 50.0; //kg

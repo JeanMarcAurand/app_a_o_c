@@ -264,9 +264,18 @@ class ListeAdherents {
     return directory.path;
   }
 
+  String _localFileName = "";
+  set localFileName(String value) {
+    _localFileName = value;
+  }
+
   Future<File> get _localFile async {
     final path = await _localPath;
-    return File('$path/moulinDeCallianAdhérentsMai2024.csv');
+    if (_localFileName.isEmpty) {
+      return File('$path/moulinDeCallianAdhérentsMai2024.csv');
+    } else {
+      return File(_localFileName);
+    }
   }
 
   Future<Stream<List<dynamic>>> readCSVAsStream() async {
