@@ -1,6 +1,6 @@
 # aA_O_C
 
-Aplication pour l'Association des Oleicukteurs de Callian.
+Aplication pour l'Association des Oleiculteurs de Callian.
 
 ## Getting Started
 
