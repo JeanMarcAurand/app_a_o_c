@@ -115,18 +115,6 @@ class QRCodeWidget extends StatelessWidget {
                   size: 200,
                   gapless: false,
                 ),
-
-              /*       ElevatedButton(
-          onPressed: () async {
-            if (await canLaunch(phoneNumber)) {
-              await launch(phoneNumber);
-            } else {
-              throw 'Could not launch $phoneNumber';
-            }
-          },
-          child: Text('Appeler le numéro'),
-        ),
-        */
             ],
           ),
         ],
@@ -160,20 +148,7 @@ class AdherentsListScreen extends StatelessWidget {
                     // Action à réaliser lors de l'appui
                     print('Card with ListTile tapped');
                     appState.majAdherentQRCode(adherent);
-/*                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) {
-                        return ModificationFicheAdherent(
-                            localCurrentAd: adherent,
-                            editCreateDisplay: EditCreateDisplay.edit);
-                      }),
-                    );*/
                   },
-                  /*(context) {
-                        return ModificationFicheAdherent(
-                            localCurrentAd: adherent,
-                            editCreateDisplay: EditCreateDisplay.edit);
-                      },*/
                   child: ListTile(
                     leading: Icon(Icons.contact_phone, size: 28.0),
                     title: Text('${adherent.nom} ${adherent.prenom}'),
