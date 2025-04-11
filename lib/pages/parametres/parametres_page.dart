@@ -4,10 +4,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 
-import 'package:aA_O_C/main.dart';
-import 'parametres.dart';
-import 'adherents_page.dart';
-import 'liste_adherents.dart';
+import 'package:app_a_o_c/main.dart';
+import '../../features/parametres/parametres.dart';
+import '../adherents/adherents_page.dart';
+import '../../features/adherents/liste_adherents.dart';
 
 Future<String?> pickFile(String path, String type) async {
   FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -134,7 +134,7 @@ class ColorListScreen extends StatelessWidget {
       },
       {
         'name': 'dialogBackgroundColor Color',
-        'color': theme.dialogBackgroundColor
+        'color': theme.dialogTheme.backgroundColor
       },
       {
         'name': 'unselectedWidgetColor Color',

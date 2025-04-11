@@ -2,10 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:app_a_o_c/shared/utils/date_utilitaire.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:csv/csv.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 class RendezVous {
   String nom = ""; // Pour avoir info min si plus dans la liste des adhérents.
@@ -49,49 +47,82 @@ class RendezVous {
   }
 }
 
-class Journee {
-  final DateTime date;
-
+class CaracteristiquesJournee {
   bool chome = false; // true = chomé.
 
   int nombreDeMotte = 3;
   int poidsMotteMax = 250; // en kg
   int poidsMotteMin = 200; // en kg
+  int poidsTotalJournee = 0; // en kg
 
-  int poidsTotalJournee = 0;
-
-  final List<RendezVous> listeDesRendezVous;
-
-  Journee({
-    required this.date,
+  CaracteristiquesJournee({
     this.chome = false,
     this.nombreDeMotte = 3,
     this.poidsMotteMax = 250,
     this.poidsMotteMin = 200,
     this.poidsTotalJournee = 0,
-    required this.listeDesRendezVous,
   });
 
-  // Convertir un objet en JSON
+  CaracteristiquesJournee copie() {
+    return (CaracteristiquesJournee(
+      chome: chome,
+      nombreDeMotte: nombreDeMotte,
+      poidsMotteMax: poidsMotteMax,
+      poidsMotteMin: poidsMotteMin,
+      poidsTotalJournee: poidsTotalJournee,
+    ));
+  }
+
+  void copyCaracteristiquesJournee(CaracteristiquesJournee caracFrom) {
+    chome = caracFrom.chome;
+    nombreDeMotte = caracFrom.nombreDeMotte;
+    poidsMotteMax = caracFrom.poidsMotteMax;
+    poidsMotteMin = caracFrom.poidsMotteMin;
+  }
+
+  // Convertir en JSON.
   Map<String, dynamic> toJson() => {
-        'date': date.toIso8601String(),
         'chome': chome,
         'nombreDeMotte': nombreDeMotte,
         'poidsMotteMax': poidsMotteMax,
         'poidsMotteMin': poidsMotteMin,
         'poidsTotalJournee': poidsTotalJournee,
+      };
+// Créer un objet à partir du JSON
+  factory CaracteristiquesJournee.fromJson(Map<String, dynamic> json) {
+    return CaracteristiquesJournee(
+      chome: json['chome'],
+      nombreDeMotte: json['nombreDeMotte'],
+      poidsMotteMax: json['poidsMotteMax'],
+      poidsMotteMin: json['poidsMotteMin'],
+      poidsTotalJournee: json['poidsTotalJournee'],
+    );
+  }
+}
+
+class Journee {
+  final List<RendezVous> listeDesRendezVous;
+  final CaracteristiquesJournee caracteristiquesJournee;
+  Journee({
+    required this.caracteristiquesJournee,
+    required this.listeDesRendezVous,
+  });
+
+  void majCaracteristiquesJournee(CaracteristiquesJournee caracFrom) {
+    caracteristiquesJournee.copyCaracteristiquesJournee(caracFrom);
+  }
+
+  // Convertir un objet en JSON
+  Map<String, dynamic> toJson() => {
+        'caracteristiquesJournee': caracteristiquesJournee,
         'listeDesRendezVous':
             listeDesRendezVous.map((a) => a.toJson()).toList(),
       };
   // Créer un objet à partir du JSON
   factory Journee.fromJson(Map<String, dynamic> json) {
     return Journee(
-      date: DateTime.parse(json['date']),
-      chome: json['chome'],
-      nombreDeMotte: json['nombreDeMotte'],
-      poidsMotteMax: json['poidsMotteMax'],
-      poidsMotteMin: json['poidsMotteMin'],
-      poidsTotalJournee: json['poidsTotalJournee'],
+      caracteristiquesJournee:
+          CaracteristiquesJournee.fromJson(json['caracteristiquesJournee']),
       listeDesRendezVous: (json['listeDesRendezVous'] as List)
           .map((i) => RendezVous.fromJson(i))
           .toList(),
@@ -106,15 +137,61 @@ class Agenda {
   List<Journee> _listeJournee = [];
   int anneeAgenda = 0;
 
-  Agenda();
-
-  // Constructeur privé avec initialisations
-  Agenda._privateConstructor() {
-    _initlocalisation();
-  }
   // Instance unique de la classe
-  static final Agenda _instance = Agenda._privateConstructor();
+  static final Agenda _instance = Agenda();
   static Agenda get instance => _instance;
+
+  int get moisDebutAgenda {
+    return _moisDebutAgenda;
+  }
+
+  int get nbMoisAgenda {
+    return _nbMoisAgenda;
+  }
+
+// Liste des jours de la semaine sur une période.
+  List<bool> listeJourSemaineSurPeriode(DateTime dateDebut, DateTime dateFin) {
+    List<bool> listeJour = [false, false, false, false, false, false, false];
+    DateTime dateCourante = dateDebut;
+    DateTime dateFinPlusUn = DateUtilitaire.addOneDay(dateFin);
+    DateTime dateFinPlusHuit = dateFin.add(Duration(days: 8));
+
+    while ((dateCourante.isBefore(dateFinPlusUn)) &&
+        (dateCourante.isBefore(dateFinPlusHuit))) {
+      listeJour[dateCourante.weekday - 1] = true;
+      dateCourante = DateUtilitaire.addOneDay(dateCourante);
+    }
+    return listeJour;
+  }
+
+// Maj des Caracteristiques d'un journée ( sauf poids total fixé par rdv)
+  Future<void> majCaracteristiquesJournee(DateTime dateDebut, DateTime dateFin,
+      List<bool> dayToApply, CaracteristiquesJournee caracFrom) async {
+    File file = await getLocalFileName(anneeAgenda);
+
+    DateTime dateCourante = dateDebut;
+    DateTime dateFinPlusUn = DateUtilitaire.addOneDay(dateFin);
+    while (dateCourante.isBefore(dateFinPlusUn)) {
+      if (dayToApply[dateCourante.weekday - 1] || (dateDebut == dateFin)) {
+        getJournee(dateCourante).majCaracteristiquesJournee(caracFrom);
+      }
+      dateCourante = DateUtilitaire.addOneDay(dateCourante);
+    }
+    // Maj le fichier.
+    _ecritureAgenda(file);
+  }
+
+  bool isCaracteristiqueJourneeIdentique(
+      DateTime date, CaracteristiquesJournee caracEdite) {
+    return ((getJournee(date).caracteristiquesJournee.chome ==
+            caracEdite.chome) &
+        (getJournee(date).caracteristiquesJournee.nombreDeMotte ==
+            caracEdite.nombreDeMotte) &
+        (getJournee(date).caracteristiquesJournee.poidsMotteMax ==
+            caracEdite.poidsMotteMax) &
+        (getJournee(date).caracteristiquesJournee.poidsMotteMin ==
+            caracEdite.poidsMotteMin));
+  }
 
   Future<void> setAnneeAgenda(int annee) async {
     anneeAgenda = annee;
@@ -139,17 +216,18 @@ class Agenda {
         startDate.day,
       );
 
-      DateTime currentDate = startDate;
-
-      while (currentDate.isBefore(endDate)) {
+      DateTime dateCourante = startDate;
+      bool chome = false;
+      while (dateCourante.isBefore(endDate)) {
         // Par défaut, samedi et dimanche chomés.
-        bool chome = false;
-        if ((currentDate.weekday == 6) || (currentDate.weekday == 7)) {
+        chome = false;
+        if ((dateCourante.weekday == 6) || (dateCourante.weekday == 7)) {
           chome = true;
         }
-        _listeJournee.add(
-            Journee(date: currentDate, chome: chome, listeDesRendezVous: []));
-        currentDate = addOneDay(currentDate);
+        _listeJournee.add(Journee(
+            caracteristiquesJournee: CaracteristiquesJournee(chome: chome),
+            listeDesRendezVous: []));
+        dateCourante = DateUtilitaire.addOneDay(dateCourante);
       }
 // Ecrit le nouveau fichier.
       _ecritureAgenda(file);
@@ -169,8 +247,10 @@ class Agenda {
     return _listeJournee[nombreDeJour];
   }
 
+  void setCarecteristiqueJournee(DateTime date) {}
+
   String nombreDeRDV(DateTime date) {
-    if (getJournee(date).chome == true) {
+    if (getJournee(date).caracteristiquesJournee.chome == true) {
       return "Pas de RDV, journée chomée.";
     } else if (getJournee(date).listeDesRendezVous.isEmpty == true) {
       return "Pas de RDV.";
@@ -179,16 +259,20 @@ class Agenda {
     }
   }
 
+  bool isChome(DateTime date) {
+    return getJournee(date).caracteristiquesJournee.chome;
+  }
+
   int nombreDeMotte(DateTime date) {
-    return getJournee(date).nombreDeMotte;
+    return getJournee(date).caracteristiquesJournee.nombreDeMotte;
   }
 
   int poidsMinMotte(DateTime date) {
-    return getJournee(date).poidsMotteMin;
+    return getJournee(date).caracteristiquesJournee.poidsMotteMin;
   }
 
   int poidsMaxMotte(DateTime date) {
-    return getJournee(date).poidsMotteMax;
+    return getJournee(date).caracteristiquesJournee.poidsMotteMax;
   }
 
   int poidsTotalJournee(DateTime date) {
@@ -199,34 +283,11 @@ class Agenda {
     return poids;
   }
 
-  Future<void> _initlocalisation() async {
-    // Initialiser la localisation française
-    await initializeDateFormatting('fr_FR', null);
-    Intl.defaultLocale = 'fr_FR';
-  }
-
-  DateTime addOneDay(DateTime date) {
-    return DateTime(date.year, date.month, date.day + 1);
-  }
-
-  String jourDeLaSemaine(DateTime date) {
-    return DateFormat('EEEE').format(date);
-  }
-
-  String date2String(DateTime date) {
-    return '${DateFormat('EEEE').format(date)} ${DateFormat('d').format(date)} ${DateFormat('MMMM').format(date)}';
-  }
-
-  String dateDuJour() {
-    DateTime date = DateTime.now();
-    return date2String(date);
-  }
-
   Future<File> getLocalFileName(int annee) async {
     final directory = await getApplicationDocumentsDirectory();
     final path = directory.path;
 
-    return File('$path/AA_O_C_Agenda$annee.json');
+    return File('$path/app_a_o_c_Agenda$annee.json');
   }
 
   Future<void> _lectureAgenda(File file) async {

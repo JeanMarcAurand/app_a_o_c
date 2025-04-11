@@ -2,171 +2,81 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:app_a_o_c/shared/utils/app_config.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 
 class Adherent {
-  Adherent(this._civilite, this._nom, this._prenom);
+  Adherent(this.civilite, this.nom, this.prenom);
 
-  String _civilite = "";
-  String get civilite => _civilite;
-
-  set civilite(String value) {
-    _civilite = value;
+  String civilite = "";
+    void setCivilite(String value) {
+    civilite = value;
   }
 
-  void setCivilite(String value) {
-    _civilite = value;
-  }
-
-  String _nom = "";
-  String get nom => _nom;
-
-  set nom(String value) {
-    _nom = value;
-  }
-
+  String nom = "";
   void setNom(String value) {
-    _nom = value;
+    nom = value;
   }
 
-  String _prenom = "";
-  String get prenom => _prenom;
-
-  set prenom(String value) {
-    _prenom = value;
-  }
-
+  String prenom = "";
   void setPrenom(String value) {
-    _prenom = value;
+    prenom = value;
   }
 
-  String _noRue = "";
-
-  String get noRue => _noRue;
-
-  set noRue(String value) {
-    _noRue = value;
+  String noRue = "";
+ void setNoRue(String value) {
+    noRue = value;
   }
 
-  void setNoRue(String value) {
-    _noRue = value;
+  String adresse = "";
+ void setAdresse(String value) {
+    adresse = value;
   }
 
-  String _adresse = "";
-
-  String get adresse => _adresse;
-
-  set adresse(String value) {
-    _adresse = value;
+  String complementAdresse = "";
+void setComplementAdresse(String value) {
+    complementAdresse = value;
   }
 
-  void setAdresse(String value) {
-    _adresse = value;
+  String codePostal = "";
+ void setCodePostal(String value) {
+    codePostal = value;
   }
 
-  String _complementAdresse = "";
-
-  String get complementAdresse => _complementAdresse;
-
-  set complementAdresse(String value) {
-    _complementAdresse = value;
+  String commune = "";
+ void setCommune(String value) {
+    commune = value;
   }
 
-  void setComplementAdresse(String value) {
-    _complementAdresse = value;
-  }
-
-  String _codePostal = "";
-
-  String get codePostal => _codePostal;
-
-  set codePostal(String value) {
-    _codePostal = value;
-  }
-
-  void setCodePostal(String value) {
-    _codePostal = value;
-  }
-
-  String _commune = "";
-
-  String get commune => _commune;
-
-  set commune(String value) {
-    _commune = value;
-  }
-
-  void setCommune(String value) {
-    _commune = value;
-  }
-
-  String _noTelephoneFixe = "";
-  String get noTelephoneFixe => _noTelephoneFixe;
-  set noTelephoneFixe(String value) {
-    _noTelephoneFixe = value;
-  }
-
+  String noTelephoneFixe = "";
   void setNoTelephoneFixe(String value) {
-    _noTelephoneFixe = value;
+    noTelephoneFixe = value;
   }
 
-  String _noTelephonePortable = "";
-  String get noTelephonePortable => _noTelephonePortable;
-  set noTelephonePortable(String value) {
-    _noTelephonePortable = value;
-  }
-
+  String noTelephonePortable = "";
   void setNoTelephonePortable(String value) {
-    _noTelephonePortable = value;
+    noTelephonePortable = value;
   }
 
-  String _adresseMail = "";
-  String get adresseMail => _adresseMail;
-  set adresseMail(String value) {
-    _adresseMail = value;
-  }
-
+  String adresseMail = "";
   void setAdresseMail(String value) {
-    _adresseMail = value;
+    adresseMail = value;
   }
 
-  String _dateDerniereMAJ = "";
-  String get dateDerniereMAJ => _dateDerniereMAJ;
-  set dateDerniereMAJ(String value) {
-    _dateDerniereMAJ = value;
+  String dateDerniereMAJ = "";
+ void setDateDerniereMAJ(String value) {
+    dateDerniereMAJ = value;
   }
 
-  void setDateDerniereMAJ(String value) {
-    _dateDerniereMAJ = value;
-  }
-
-  String _sourceDerniereMAJ = "";
-  String get sourceDerniereMAJ => _sourceDerniereMAJ;
-  set sourceDerniereMAJ(String value) {
-    _sourceDerniereMAJ = value;
-  }
-
+  String sourceDerniereMAJ = "";
   void setSourceDerniereMAJ(String value) {
-    _sourceDerniereMAJ = value;
+    sourceDerniereMAJ = value;
   }
 
-  int _identificateur = 0;
-
-  int get identificateur => _identificateur;
-
-  set identificateur(int value) {
-    _identificateur = value;
-  }
-
-  String _dateCreation = "";
-
-  String get dateCreation => _dateCreation;
-
-  set dateCreation(String value) {
-    _dateCreation = value;
-  }
+  int identificateur = 0;
+   String dateCreation = "";
 
   void copyAdherentFrom(Adherent adherentSource) {
     civilite = adherentSource.civilite;
@@ -206,17 +116,17 @@ class Adherent {
 
   @override
   String toString() {
-    return """Adherent( _civilite:$_civilite _nom:$_nom _prenom:$_prenom 
-            _noRue:$_noRue _adresse:$_adresse
-            _complementAdresse:$_complementAdresse
-            _codePostal:$_codePostal _commune:$_commune
-            _noTelephoneFixe:$_noTelephoneFixe 
-            _noTelephonePortable:$_noTelephonePortable
-            _adresseMail:$_adresseMail
-            _dateCreation:$_dateCreation
-            _dateDerniereMAJ:$_dateDerniereMAJ
-            _sourceDerniereMAJ:$_sourceDerniereMAJ 
-            _identificateur:$_identificateur)""";
+    return """Adherent( civilite:$civilite nom:$nom prenom:$prenom 
+            noRue:$noRue adresse:$adresse
+            complementAdresse:$complementAdresse
+            codePostal:$codePostal commune:$commune
+            noTelephoneFixe:$noTelephoneFixe 
+            noTelephonePortable:$noTelephonePortable
+            adresseMail:$adresseMail
+            dateCreation:$dateCreation
+            dateDerniereMAJ:$dateDerniereMAJ
+            sourceDerniereMAJ:$sourceDerniereMAJ 
+            identificateur:$identificateur)""";
   }
 }
 
@@ -247,10 +157,10 @@ class ListeAdherents {
       _listeAdherentsComplet[indice].noTelephoneFixe = '06 12 34 56 7$indice';
       _listeAdherentsComplet[indice].adresseMail =
           'exemple$indice.ex$indice-emple@boitemail.fr';
-      _listeAdherentsComplet[indice]._dateCreation = "01/01/197$indice";
-      _listeAdherentsComplet[indice]._dateDerniereMAJ = "02/01/197$indice";
+      _listeAdherentsComplet[indice].dateCreation = "01/01/197$indice";
+      _listeAdherentsComplet[indice].dateDerniereMAJ = "02/01/197$indice";
       _listeAdherentsComplet[indice].sourceDerniereMAJ = "JMA$indice";
-      _listeAdherentsComplet[indice]._identificateur = 1728777500 + indice;
+      _listeAdherentsComplet[indice].identificateur = 1728777500 + indice;
     }
 
 //    lectureFichierAdherents();
@@ -453,11 +363,11 @@ class ListeAdherents {
     Adherent nouvelAdherent = Adherent("", "", "");
     nouvelAdherent.copyAdherentFrom(adherent);
     nouvelAdherent.dateCreation =
-        DateFormat('dd/MM/yyyy').format(DateTime.now());
+        DateFormat('dd/MM/yyyy').format(currentDate);
     nouvelAdherent.dateDerniereMAJ = nouvelAdherent.dateCreation;
     nouvelAdherent.identificateur =
-        DateTime.now().difference(DateTime.utc(1970, 1, 1)).inSeconds;
-    nouvelAdherent.sourceDerniereMAJ = "créé aA_O_C";
+        currentDate.difference(DateTime.utc(1970, 1, 1)).inSeconds;
+    nouvelAdherent.sourceDerniereMAJ = "créé app_a_o_c";
     _listeAdherentsComplet.add(nouvelAdherent);
     _listeAdherentsComplet
         .sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
@@ -478,8 +388,8 @@ class ListeAdherents {
 
   Future<void> majAdherentEdite(
       Adherent editAd, Adherent localCurrentAd) async {
-    editAd.dateDerniereMAJ = DateFormat('dd/MM/yyyy').format(DateTime.now());
-    editAd.sourceDerniereMAJ = "modifié aA_O_C";
+    editAd.dateDerniereMAJ = DateFormat('dd/MM/yyyy').format(currentDate);
+    editAd.sourceDerniereMAJ = "modifié app_a_o_c";
     localCurrentAd.copyAdherentFrom(editAd);
     _listeAdherentsCourant
         .sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));

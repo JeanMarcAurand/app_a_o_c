@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:aA_O_C/main.dart';
-import 'liste_adherents.dart';
+import 'package:app_a_o_c/main.dart';
+import '../../features/adherents/liste_adherents.dart';
 
 class AdherentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Fiches adhérents',
@@ -61,12 +59,12 @@ class QRCodeWidget extends StatelessWidget {
     if (localCurrentAd.noTelephonePortable.isNotEmpty) {
       noTel = 'tel:${localCurrentAd.noTelephonePortable}';
       texteTel =
-          ' Pour contacter le ${localCurrentAd.noTelephonePortable} flascher:';
+          ' Pour contacter le ${localCurrentAd.noTelephonePortable} flasher:';
     } else {
       if (localCurrentAd.noTelephoneFixe.isNotEmpty) {
         noTel = 'tel:${localCurrentAd.noTelephoneFixe}';
         texteTel =
-            ' Pour contacter le ${localCurrentAd.noTelephoneFixe} flascher:';
+            ' Pour contacter le ${localCurrentAd.noTelephoneFixe} flasher:';
       } else {
         noTel = "";
         texteTel = " Pas de numéro de téléphone pour cet adhérent.";
@@ -77,7 +75,7 @@ class QRCodeWidget extends StatelessWidget {
     if (localCurrentAd.adresseMail.isNotEmpty) {
       mail =
           'mailto:${localCurrentAd.adresseMail}?subject=Moulin%20de%20Callian.&body=%20%20Bonjour!%0A%0A%0A%0A%20%20Le moulin de Callian%0A';
-      texteMail = ' Pour contacter ${localCurrentAd.adresseMail} flascher:';
+      texteMail = ' Pour contacter ${localCurrentAd.adresseMail} flasher:';
     } else {
       mail = "";
       texteMail = " Pas d'adresse mail pour cet adhérent.";
@@ -126,7 +124,6 @@ class QRCodeWidget extends StatelessWidget {
 class AdherentsListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     var appState = context.watch<MyAppState>();
 
     return Flexible(

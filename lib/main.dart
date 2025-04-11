@@ -1,14 +1,20 @@
-import 'package:english_words/english_words.dart';
+import 'package:app_a_o_c/shared/utils/app_config.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'liste_adherents.dart';
-import 'adherents_page.dart';
-import 'agenda.dart';
-import 'agenda_page.dart';
-import 'parametres.dart';
-import 'parametres_page.dart';
+import 'features/adherents/liste_adherents.dart';
+import 'pages/adherents/adherents_page.dart';
+import 'features/agenda/agenda.dart';
+import 'pages/agenda/agenda_page.dart';
+import 'features/parametres/parametres.dart';
+import 'pages/parametres/parametres_page.dart';
 
 Future<void> main() async {
+  // Initialiser la localisation française
+  await initializeDateFormatting('fr_FR', null);
+  Intl.defaultLocale = 'fr_FR';
   Parametres instanceParametres = Parametres.instance;
 
   await instanceParametres.lectureFichierParametres();
@@ -35,6 +41,14 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         ),
+        supportedLocales: [
+          Locale('fr', 'FR'), // Ajout du français
+        ],
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         home: MyHomePage(),
       ),
     );
@@ -42,9 +56,10 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
   Adherent editAd = Adherent("", "", "");
   Adherent adherentQRCode = ListeAdherents.instance.listeAdherentsCourant[0];
+  DateTime dateSelectionnee = currentDate;
+  CaracteristiquesJournee caracteristiquesJournee = CaracteristiquesJournee();
 
   TextEditingController myControllerTextFieldRecherche =
       TextEditingController();
@@ -55,23 +70,6 @@ class MyAppState extends ChangeNotifier {
       //    .text); // Par exemple, afficher le texte dans la console
       searchStrinInName(myControllerTextFieldRecherche.text);
     });
-  }
-  // ↓ Add this.
-  void getNext() {
-    current = WordPair.random();
-    notifyListeners();
-  }
-
-  // ↓ Add the code below.
-  var favorites = <WordPair>[];
-
-  void toggleFavorite() {
-    if (favorites.contains(current)) {
-      favorites.remove(current);
-    } else {
-      favorites.add(current);
-    }
-    notifyListeners();
   }
 
   void majParametresNomFichierAdherent(String text) {
@@ -114,11 +112,19 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-void majAdherentQRCode(Adherent localCurrentAd) {
-    adherentQRCode =  localCurrentAd;
+  void majAdherentQRCode(Adherent localCurrentAd) {
+    adherentQRCode = localCurrentAd;
     notifyListeners();
   }
 
+  void majDateSelectionnee(DateTime dateTime) {
+    dateSelectionnee = dateTime;
+    notifyListeners();
+  }
+
+  void majCaracteristiquesJournee() {
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatefulWidget {

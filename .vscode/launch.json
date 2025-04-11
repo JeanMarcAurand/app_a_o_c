@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "aA_O_C",
+            "name": "app_a_o_c",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "aA_O_C (profile mode)",
+            "name": "app_a_o_c (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "aA_O_C (release mode)",
+            "name": "app_a_o_c (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

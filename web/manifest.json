@@ -1,6 +1,6 @@
 {
-    "name": "aA_O_C",
-    "short_name": "aA_O_C",
+    "name": "app_a_o_c",
+    "short_name": "app_a_o_c",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
