@@ -1,16 +1,19 @@
 # app_a_o_c
 
-Aplication pour l'Association des Oleiculteurs de Callian.
+Application Flutter pour l’Association des Oléiculteurs de Callian 🌿
 
-## Getting Started
+## Fonctionnalités
 
-This project is a starting point for a Flutter application.
+- Gestion des adhérents.
+- Gestion de l'agenda.
+- gestion des paramètres.
+- ...
 
-A few resources to get you started if this is your first Flutter project:
+## Organisation du code
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- `lib/pages/` : pages principales de l’application.
+- `lib/features/` : classes de données (modèles).
+- `lib/shared/utils/` : classes de fonctions générales.
+- `lib/shared/widgets/` : classes de widgets générales.
+- `assets/` : icônes et images
+- ...
