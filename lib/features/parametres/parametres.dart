@@ -39,6 +39,14 @@ class Parametres {
     _mapDesParametres["anneeFichierAgenda"] = value;
   }
 
+  bool get isDark {
+    return _mapDesParametres["isDark"];
+  }
+
+  set isDark(bool value) {
+    _mapDesParametres["isDark"] = value;
+  }
+
   Parametres();
   // Constructeur privé avec initialisations
   Parametres._privateConstructor() {
@@ -48,7 +56,7 @@ class Parametres {
         "C:/Users/jean-/OneDrive/Documents/moulinDeCallianAdhérentsMai2024.csv";
     poidsMotteMax = 50.0; //kg
     poidsMotteMin = 30.0; //kg
-
+    isDark = false; // mode clair.
     // Init avant lecture fichier.
   }
   // Instance unique de la classe

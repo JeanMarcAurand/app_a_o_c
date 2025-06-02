@@ -1,4 +1,8 @@
+import 'package:app_a_o_c/config/app_theme.dart';
+import 'package:app_a_o_c/pages/agenda/filtre_config_generale.dart';
+import 'package:app_a_o_c/pages/informations/informations_page.dart';
 import 'package:app_a_o_c/shared/utils/app_config.dart';
+import 'package:app_a_o_c/shared/widgets/app_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -18,14 +22,18 @@ Future<void> main() async {
   Parametres instanceParametres = Parametres.instance;
 
   await instanceParametres.lectureFichierParametres();
-  await instanceParametres.ecritureFichierParametres();
+  //await instanceParametres.ecritureFichierParametres();
 
   Agenda.instance.setAnneeAgenda(Parametres.instance.anneeFichierAgenda);
 
   ListeAdherents instanceListeAdherent = ListeAdherents.instance;
   await instanceListeAdherent.lectureFichierAdherents();
 
-  runApp(MyApp());
+  // runApp(MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => MyAppState(),
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -33,24 +41,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'Namer App',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        ),
-        supportedLocales: [
-          Locale('fr', 'FR'), // Ajout du français
-        ],
-        localizationsDelegates: [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        home: MyHomePage(),
-      ),
+    ThemeMode themeMode = context.watch<MyAppState>().themeMode;
+
+    return MaterialApp(
+      title: 'Namer App',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeMode,
+      supportedLocales: [
+        Locale('fr', 'FR'), // Ajout du français
+      ],
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: MyHomePage(),
     );
   }
 }
@@ -60,6 +66,16 @@ class MyAppState extends ChangeNotifier {
   Adherent adherentQRCode = ListeAdherents.instance.listeAdherentsCourant[0];
   DateTime dateSelectionnee = currentDate;
   CaracteristiquesJournee caracteristiquesJournee = CaracteristiquesJournee();
+  FiltrePourCalendier filtrePourCalendier = FiltrePourCalendier.poidsDisponible;
+  int poidsPourRendezVous = 50;
+
+  ThemeMode _themeMode =
+      Parametres.instance.isDark ? ThemeMode.dark : ThemeMode.light;
+  ThemeMode get themeMode => _themeMode;
+  void setThemeMode(ThemeMode mode) {
+    _themeMode = mode;
+    notifyListeners(); // Ceci déclenche le rebuild de tous les widgets qui écoutent
+  }
 
   TextEditingController myControllerTextFieldRecherche =
       TextEditingController();
@@ -125,6 +141,20 @@ class MyAppState extends ChangeNotifier {
   void majCaracteristiquesJournee() {
     notifyListeners();
   }
+
+  void majFiltrePourCalendier(FiltrePourCalendier value) {
+    filtrePourCalendier = value;
+    notifyListeners();
+  }
+
+  void majPoidsPourRendezVous(int value) {
+    poidsPourRendezVous = value;
+    notifyListeners();
+  }
+
+  int getPoidsPourRendezVous() {
+    return(poidsPourRendezVous);
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -154,6 +184,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case 4:
         page = ParametresPage();
         break;
+      case 5:
+        page = InformationsPage();
+        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -162,40 +195,46 @@ class _MyHomePageState extends State<MyHomePage> {
         body: Row(
           children: [
             SafeArea(
-              child: NavigationRail(
-                backgroundColor: Theme.of(context).hoverColor,
-                //  const Color.fromARGB(255, 111, 165, 113),
-//                extended: constraints.maxWidth >= 600, // ← Here.
-                labelType: NavigationRailLabelType.all,
+              child: AppCard(
+                child: NavigationRail(
+                  backgroundColor: Theme.of(context).hoverColor,
+                  //  const Color.fromARGB(255, 111, 165, 113),
+                  //                extended: constraints.maxWidth >= 600, // ← Here.
+                  labelType: NavigationRailLabelType.all,
 
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.contacts),
-                    label: Text('Adhérents'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.calendar_month),
-                    label: Text('Agenda'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.euro),
-                    label: Text('Bon de sortie'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.query_stats),
-                    label: Text('Statistiques'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.settings),
-                    label: Text('Paramètres'),
-                  ),
-                ],
-                selectedIndex: selectedIndex,
-                onDestinationSelected: (value) {
-                  setState(() {
-                    selectedIndex = value;
-                  });
-                },
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.contacts),
+                      label: Text('Adhérents'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.calendar_month),
+                      label: Text('Agenda'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.euro),
+                      label: Text('Bon de sortie'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.query_stats),
+                      label: Text('Statistiques'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.settings),
+                      label: Text('Paramètres'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.info),
+                      label: Text('Informations'),
+                    ),
+                  ],
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+                  },
+                ),
               ),
             ),
             Expanded(

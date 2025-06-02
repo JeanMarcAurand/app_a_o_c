@@ -1,7 +1,9 @@
+import 'package:app_a_o_c/shared/widgets/app_card.dart';
+import 'package:app_a_o_c/shared/widgets/app_divider.dart';
+import 'package:app_a_o_c/shared/widgets/qr_code_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:app_a_o_c/main.dart';
 import '../../features/adherents/liste_adherents.dart';
 
@@ -18,25 +20,30 @@ class AdherentsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            BarreNavigation(),
-            SizedBox(height: 10),
+            AppCard(
+              child: BarreNavigation(),
+            ),
             Expanded(
               child: Row(
                 children: [
                   Expanded(
                     // Empêche l'erreur en donnant une hauteur disponible.
-                    child: Column(
-                      children: [
-                        AdherentsListScreen(),
-                      ],
+                    child: AppCard(
+                      child: Column(
+                        children: [
+                          AdherentsListScreen(),
+                        ],
+                      ),
                     ),
                   ),
                   Expanded(
                     // Empêche l'erreur en donnant une hauteur disponible.
-                    child: Column(
-                      children: [
-                        QRCodeWidget(),
-                      ],
+                    child: AppCard(
+                      child: Column(
+                        children: [
+                          QRCodeWidget(),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -49,77 +56,7 @@ class AdherentsPage extends StatelessWidget {
   }
 }
 
-class QRCodeWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    Adherent localCurrentAd = appState.adherentQRCode;
-    String texteTel = "Pas de numéro de tel pour cet adhérent.";
-    String noTel = "";
-    if (localCurrentAd.noTelephonePortable.isNotEmpty) {
-      noTel = 'tel:${localCurrentAd.noTelephonePortable}';
-      texteTel =
-          ' Pour contacter le ${localCurrentAd.noTelephonePortable} flasher:';
-    } else {
-      if (localCurrentAd.noTelephoneFixe.isNotEmpty) {
-        noTel = 'tel:${localCurrentAd.noTelephoneFixe}';
-        texteTel =
-            ' Pour contacter le ${localCurrentAd.noTelephoneFixe} flasher:';
-      } else {
-        noTel = "";
-        texteTel = " Pas de numéro de téléphone pour cet adhérent.";
-      }
-    }
-    String texteMail = " Pas d'adresse mail pour cet adhérent.";
-    String mail = "";
-    if (localCurrentAd.adresseMail.isNotEmpty) {
-      mail =
-          'mailto:${localCurrentAd.adresseMail}?subject=Moulin%20de%20Callian.&body=%20%20Bonjour!%0A%0A%0A%0A%20%20Le moulin de Callian%0A';
-      texteMail = ' Pour contacter ${localCurrentAd.adresseMail} flasher:';
-    } else {
-      mail = "";
-      texteMail = " Pas d'adresse mail pour cet adhérent.";
-    }
 
-    return Expanded(
-      // Empêche l'erreur en donnant une hauteur disponible.
-      child: ListView(
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(height: 20),
-              Text(
-                '${localCurrentAd.civilite} ${localCurrentAd.nom}',
-                style: TextStyle(fontSize: 24),
-              ),
-              Text(localCurrentAd.adresse),
-              Text('${localCurrentAd.codePostal} ${localCurrentAd.commune}'),
-              SizedBox(height: 20),
-              Text(texteTel),
-              if (noTel.isNotEmpty)
-                QrImageView(
-                  data: noTel,
-                  version: QrVersions.auto,
-                  size: 100,
-                  gapless: false,
-                ),
-              SizedBox(height: 20),
-              Text(texteMail),
-              if (mail.isNotEmpty)
-                QrImageView(
-                  data: mail,
-                  version: QrVersions.auto,
-                  size: 200,
-                  gapless: false,
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class AdherentsListScreen extends StatelessWidget {
   @override
@@ -143,7 +80,6 @@ class AdherentsListScreen extends StatelessWidget {
               child: InkWell(
                   onTap: () {
                     // Action à réaliser lors de l'appui
-                    print('Card with ListTile tapped');
                     appState.majAdherentQRCode(adherent);
                   },
                   child: ListTile(
@@ -537,56 +473,59 @@ class ModificationFicheAdherent extends StatelessWidget {
           },
         ),
       ),
-      body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Flexible(
-              //             fit: FlexFit.loose,
-              flex: 1,
-              child: FicheAdherent(
-                enableEditBool: modifiableTrueAffichageFalse,
-                adherent: appState.editAd,
-                formKey: _formKey,
+      body: AppCard(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                //             fit: FlexFit.loose,
+                flex: 1,
+                child: FicheAdherent(
+                  enableEditBool: modifiableTrueAffichageFalse,
+                  adherent: appState.editAd,
+                  formKey: _formKey,
+                ),
               ),
-            ),
-            if (editCreateDisplay != EditCreateDisplay.display)
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      dialogConfirmation(
-                          context,
-                          appState,
-                          localCurrentAd,
-                          editTrueCreateFalse,
-                          _formKey.currentState?.validate());
-                    },
-                    icon: Icon(Icons.delete_forever),
-                    label: Text('Annuler'),
-                    //  color: theme.colorScheme.primary,    // ← And also this.
+              AppDivider(),
+              if (editCreateDisplay != EditCreateDisplay.display)
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        dialogConfirmation(
+                            context,
+                            appState,
+                            localCurrentAd,
+                            editTrueCreateFalse,
+                            _formKey.currentState?.validate());
+                      },
+                      icon: Icon(Icons.delete_forever),
+                      label: Text('Annuler'),
+                      //  color: theme.colorScheme.primary,    // ← And also this.
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      dialogChampObligatoire(
-                          context,
-                          appState,
-                          localCurrentAd,
-                          editTrueCreateFalse,
-                          _formKey.currentState?.validate());
-                    },
-                    iconAlignment: IconAlignment.end,
-                    icon: Icon(Icons.edit),
-                    label: Text('Sauvegarder'),
-                    //  color: theme.colorScheme.primary,    // ← And also this.
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        dialogChampObligatoire(
+                            context,
+                            appState,
+                            localCurrentAd,
+                            editTrueCreateFalse,
+                            _formKey.currentState?.validate());
+                      },
+                      iconAlignment: IconAlignment.end,
+                      icon: Icon(Icons.edit),
+                      label: Text('Sauvegarder'),
+                      //  color: theme.colorScheme.primary,    // ← And also this.
+                    ),
                   ),
-                ),
-              ]),
-          ]),
+                ]),
+            ]),
+      ),
     );
   }
 }
@@ -892,91 +831,9 @@ class ChampTexte extends StatelessWidget {
               borderSide: BorderSide(color: Colors.red)),
           labelText: labelTextDecoration,
         ),
-        style: TextStyle(color: Colors.black),
+        //style: TextStyle(color: Colors.black),
       ),
     );
   }
 }
 
-/*
-class ChampTexte extends StatefulWidget {
-  final String labelText;
-  final String labelTextDecoration;
-  final bool enableEdit;
-  final void Function(String) callback;
-  final String hint;
-  final String mask;
-  final String? Function(String?)? validation;
-
-  ChampTexte({
-    super.key,
-    required this.labelText,
-    required this.labelTextDecoration,
-    required this.enableEdit,
-    required this.callback,
-    required this.validation,
-    this.hint = '',
-    this.mask = '',
-  });
-
-  @override
-  State<ChampTexte> createState() => _ChampTexteState();
-}
-
-class _ChampTexteState extends State<ChampTexte> {
-  // Contrôleur de texte pour gérer les entrées de l'utilisateur.
-  late TextEditingController _textController;
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialisation du contrôleur de texte avec le texte initial.
-    _textController = TextEditingController(text: widget.labelText);
-  }
-
-  @override
-  void dispose() {
-    // Nettoyage du contrôleur de texte.
-    _textController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: TextFormField(
-        // Activation ou désactivation de l'édition en fonction de enableEdit.
-        enabled: widget.enableEdit,
-        controller: _textController,
-        // Appel de la fonction callback lors d'un changement de texte.
-        onChanged: (text) {
-          widget.callback(text);
-        },
-        inputFormatters: [
-          // Application du masque de saisie.
-          MaskTextInputFormatter(
-            mask: widget.mask,
-            initialText: widget.labelText,
-            type: MaskAutoCompletionType.eager,
-          ),
-        ],
-        // Validation personnalisée de l'entrée.
-        validator: widget.validation,
-        decoration: InputDecoration(
-          hintText: widget.hint,
-          hintStyle: const TextStyle(color: Colors.grey),
-          focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.green)),
-          border: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey)),
-          errorBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.red)),
-          labelText: widget.labelTextDecoration,
-        ),
-        style: TextStyle(color: Colors.black),
-      ),
-    );
-  }
-}
-*/

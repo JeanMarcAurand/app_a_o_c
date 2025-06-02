@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:app_a_o_c/pages/agenda/filtre_config_generale.dart';
+import 'package:app_a_o_c/shared/utils/app_config.dart';
 import 'package:app_a_o_c/shared/utils/date_utilitaire.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -180,7 +182,23 @@ class Agenda {
     // Maj le fichier.
     _ecritureAgenda(file);
   }
+/*
+// Recherche de la première date avec une dipo donnée.
+  DateTime rendezVousAuPlusTot(int poids) {
+    DateTime dateCourante = currentDate;
 
+    DateTime startDate = DateTime(anneeAgenda, _moisDebutAgenda, 1);
+    DateTime dateFin = DateTime(
+      startDate.year,
+      startDate.month + _nbMoisAgenda,
+      startDate.day,
+    );
+    DateTime dateFinPlusUn = DateUtilitaire.addOneDay(dateFin);
+    while ((dateCourante.isBefore(dateFinPlusUn)) &&
+        (poidsTotalJournee(dateCourante) + poids >
+            poidsMaxMotte(dateCourante) * nombreDeMotte(dateCourante))) {???}
+  }
+*/
   bool isCaracteristiqueJourneeIdentique(
       DateTime date, CaracteristiquesJournee caracEdite) {
     return ((getJournee(date).caracteristiquesJournee.chome ==
@@ -281,6 +299,56 @@ class Agenda {
       poids = poids + rendezVous.poidsCeuillette;
     }
     return poids;
+  }
+
+  String intKg2KgOuT(int kg) {
+    String returnValue = "";
+
+    if (kg < 1000) {
+      returnValue = "${kg.toString().padLeft(3)} kg";
+    } else {
+      double pmf = kg / 1000.0;
+      returnValue = "${pmf.toStringAsFixed(2)} t";
+    }
+    return returnValue;
+  }
+
+  String getCaracteritiqueForDay(
+      FiltrePourCalendier filtrePourCalendier, DateTime date) {
+    String returnValue = "";
+    CaracteristiquesJournee caracteristiquesJournee =
+        getJournee(date).caracteristiquesJournee;
+    switch (filtrePourCalendier) {
+      case FiltrePourCalendier.chome:
+        if (caracteristiquesJournee.chome == true) {
+          returnValue = "chomée";
+        } else {
+          returnValue = "travaillée";
+        }
+        break;
+      case FiltrePourCalendier.nombreMotte:
+        returnValue = "${caracteristiquesJournee.nombreDeMotte}";
+        break;
+      case FiltrePourCalendier.poidsMax:
+        returnValue = intKg2KgOuT(caracteristiquesJournee.poidsMotteMax);
+        break;
+      case FiltrePourCalendier.poidsMin:
+        returnValue = intKg2KgOuT(caracteristiquesJournee.poidsMotteMin);
+        break;
+      case FiltrePourCalendier.poidsReserve:
+        returnValue = intKg2KgOuT(caracteristiquesJournee.poidsTotalJournee);
+        break;
+      case FiltrePourCalendier.poidsDisponible:
+        int pm = 0;
+        if (caracteristiquesJournee.chome == false) {
+          pm = caracteristiquesJournee.nombreDeMotte *
+                  caracteristiquesJournee.poidsMotteMax -
+              caracteristiquesJournee.poidsTotalJournee;
+        }
+        returnValue = intKg2KgOuT(pm);
+        break;
+    }
+    return returnValue;
   }
 
   Future<File> getLocalFileName(int annee) async {

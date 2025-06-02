@@ -43,11 +43,12 @@ class _LabeledSwitchState extends State<LabeledSwitch> {
         child: Row(
           children: <Widget>[
             Text(
-              _isSelected ?  widget.labelFalse : widget.labelTrue,
+              widget.labelTrue,
               style: TextStyle(
-                color: _isSelected ? null : Colors.grey,
+                color: !_isSelected ? null : Colors.grey,
               ),
             ),
+            SizedBox(width: 10),
             Switch(
               value: _isSelected,
               onChanged: (bool newValue) {
@@ -56,6 +57,13 @@ class _LabeledSwitchState extends State<LabeledSwitch> {
                 });
                 widget.onValueChanged(_isSelected);
               },
+            ),
+            SizedBox(width: 10),
+            Text(
+              widget.labelFalse,
+              style: TextStyle(
+                color: _isSelected ? null : Colors.grey,
+              ),
             ),
           ],
         ),

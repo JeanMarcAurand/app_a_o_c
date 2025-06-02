@@ -1,36 +1,27 @@
+import 'package:app_a_o_c/shared/widgets/pick_file.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:async';
 
 import 'package:app_a_o_c/main.dart';
 import '../../features/parametres/parametres.dart';
 import '../adherents/adherents_page.dart';
 import '../../features/adherents/liste_adherents.dart';
-
-Future<String?> pickFile(String path, String type) async {
-  FilePickerResult? result = await FilePicker.platform.pickFiles(
-    type: FileType.custom,
-    allowedExtensions: [type],
-    initialDirectory: path,
-  );
-
-  if (result != null) {
-    PlatformFile file = result.files.first;
-    print('Nom du fichier : ${file.name}');
-    print('Chemin du fichier : ${file.path}');
-    return file.path;
-  } else {
-    // L'utilisateur a annulé la sélection
-    return null;
-  }
-}
+import '../../shared/widgets/labeled_switch.dart';
 
 class ParametresPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    void updateModeSombre(bool value) {
+      Parametres.instance.isDark = value;
+      Parametres.instance.ecritureFichierParametres();
+      if (value == true) {
+        appState.setThemeMode(ThemeMode.dark);
+      } else {
+        appState.setThemeMode(ThemeMode.light);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -102,6 +93,13 @@ class ParametresPage extends StatelessWidget {
                   SizedBox(width: 10),
                 ],
               )),
+          SizedBox(width: 10),
+          LabeledSwitch(
+            labelFalse: 'Interface mode sombre:',
+            labelTrue: 'Interface mode clair:',
+            value: Parametres.instance.isDark,
+            onValueChanged: updateModeSombre,
+          ),
         ],
       ),
     );
