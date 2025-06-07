@@ -1,8 +1,6 @@
-import 'package:app_a_o_c/shared/utils/date_utilitaire.dart';
 import 'package:app_a_o_c/shared/widgets/app_card.dart';
 import 'package:app_a_o_c/shared/widgets/app_divider.dart';
 import 'package:app_a_o_c/shared/widgets/app_slider.dart';
-import 'package:app_a_o_c/shared/widgets/date_picker.dart';
 import 'package:flutter/material.dart';
 
 enum TypeDateRDV { plusProche, libreChoix }

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:app_a_o_c/pages/agenda/filtre_config_generale.dart';
-import 'package:app_a_o_c/shared/utils/app_config.dart';
 import 'package:app_a_o_c/shared/utils/date_utilitaire.dart';
 import 'package:path_provider/path_provider.dart';
 
