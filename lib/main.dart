@@ -16,6 +16,9 @@ import 'features/parametres/parametres.dart';
 import 'pages/parametres/parametres_page.dart';
 
 Future<void> main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  
   // Initialiser la localisation française
   await initializeDateFormatting('fr_FR', null);
   Intl.defaultLocale = 'fr_FR';

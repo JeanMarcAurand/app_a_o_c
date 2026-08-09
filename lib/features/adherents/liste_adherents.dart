@@ -1,17 +1,19 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
 
 import 'package:app_a_o_c/shared/utils/app_config.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
 class Adherent {
   Adherent(this.civilite, this.nom, this.prenom);
 
   String civilite = "";
-    void setCivilite(String value) {
+  void setCivilite(String value) {
     civilite = value;
   }
 
@@ -26,27 +28,27 @@ class Adherent {
   }
 
   String noRue = "";
- void setNoRue(String value) {
+  void setNoRue(String value) {
     noRue = value;
   }
 
   String adresse = "";
- void setAdresse(String value) {
+  void setAdresse(String value) {
     adresse = value;
   }
 
   String complementAdresse = "";
-void setComplementAdresse(String value) {
+  void setComplementAdresse(String value) {
     complementAdresse = value;
   }
 
   String codePostal = "";
- void setCodePostal(String value) {
+  void setCodePostal(String value) {
     codePostal = value;
   }
 
   String commune = "";
- void setCommune(String value) {
+  void setCommune(String value) {
     commune = value;
   }
 
@@ -66,7 +68,7 @@ void setComplementAdresse(String value) {
   }
 
   String dateDerniereMAJ = "";
- void setDateDerniereMAJ(String value) {
+  void setDateDerniereMAJ(String value) {
     dateDerniereMAJ = value;
   }
 
@@ -76,7 +78,7 @@ void setComplementAdresse(String value) {
   }
 
   int identificateur = 0;
-   String dateCreation = "";
+  String dateCreation = "";
 
   void copyAdherentFrom(Adherent adherentSource) {
     civilite = adherentSource.civilite;
@@ -181,6 +183,7 @@ class ListeAdherents {
 
   Future<File> get _localFile async {
     final path = await _localPath;
+
     if (_localFileName.isEmpty) {
       return File('$path/moulinDeCallianAdhérentsMai2024.csv');
     } else {
@@ -188,37 +191,31 @@ class ListeAdherents {
     }
   }
 
-  Future<Stream<List<dynamic>>> readCSVAsStream() async {
-    // Lire le fichier en tant que stream
-    final file = await _localFile;
-    final inputStream = file.openRead();
-
-    // Parser le contenu du fichier CSV
-    return inputStream
-        .transform(utf8.decoder)
-        .transform(CsvToListConverter(fieldDelimiter: ';'));
-  }
-
   Future<List<List<dynamic>>> readCSV() async {
-    // Lire le fichier
-    final file = await _localFile;
-    final csvString = await file.readAsString();
+    String csvString;
 
+    // Lire le fichier
+    if (kIsWeb) {
+      csvString = await rootBundle.loadString('assets/data/adherents_demo.csv');
+    } else {
+      final file = await _localFile;
+      csvString = await file.readAsString();
+    }
     // Parser le contenu du fichier CSV
-    List<List<dynamic>> csvTable =
-        CsvToListConverter(fieldDelimiter: ';').convert(csvString);
-    return csvTable;
+    return const CsvToListConverter(
+      fieldDelimiter: ';',
+    ).convert(csvString);
   }
 
   Future<void> lectureFichierAdherents() async {
-    final path = await _localPath;
-    print("fichier $path");
     _listeAdherentsComplet.clear();
-    final csvStream = await readCSVAsStream();
+
+    final csvTable = await readCSV();
+
     bool isFirstRow = true;
     List<dynamic> firstRow = [];
 
-    await for (var row in csvStream) {
+    for (var row in csvTable) {
       // Appliquer les transformations ou traitements nécessaires
       print(row);
       if (isFirstRow) {
@@ -248,6 +245,10 @@ class ListeAdherents {
   }
 
   Future<void> ecritureFichierAdherents() async {
+    if (kIsWeb) {
+      print('Mode Web démo : sauvegarde ignorée.');
+      return;
+    }
 // construit la liste.
     List<String> firstRow = [
       "Civilité",
@@ -362,8 +363,7 @@ class ListeAdherents {
   Future<void> createAdherentEdite(Adherent adherent) async {
     Adherent nouvelAdherent = Adherent("", "", "");
     nouvelAdherent.copyAdherentFrom(adherent);
-    nouvelAdherent.dateCreation =
-        DateFormat('dd/MM/yyyy').format(currentDate);
+    nouvelAdherent.dateCreation = DateFormat('dd/MM/yyyy').format(currentDate);
     nouvelAdherent.dateDerniereMAJ = nouvelAdherent.dateCreation;
     nouvelAdherent.identificateur =
         currentDate.difference(DateTime.utc(1970, 1, 1)).inSeconds;

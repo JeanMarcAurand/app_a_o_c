@@ -4,6 +4,9 @@ import 'dart:convert';
 
 import 'package:path_provider/path_provider.dart';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
 class Parametres {
   Map<String, dynamic> _mapDesParametres = {};
 
@@ -54,6 +57,7 @@ class Parametres {
     anneeFichierAgenda = 2024;
     nomFichierAdherents =
         "C:/Users/jean-/OneDrive/Documents/moulinDeCallianAdhérentsMai2024.csv";
+
     poidsMotteMax = 50.0; //kg
     poidsMotteMin = 30.0; //kg
     isDark = false; // mode clair.
@@ -79,24 +83,34 @@ class Parametres {
   }
 
   Future<void> lectureFichierParametres() async {
-    final filename = await _localfilename;
+    if (kIsWeb) {
+      final jsonStr =
+          await rootBundle.loadString('assets/data/parametres_demo.json');
+      _mapDesParametres = jsonDecode(jsonStr) as Map<String, dynamic>;
+    } else {
+      final filename = await _localfilename;
 
-    try {
-      // Lire le fichier entier
-      final file = File(filename);
-      final jsonString = await file.readAsString();
+      try {
+        // Lire le fichier entier
+        final file = File(filename);
+        final jsonString = await file.readAsString();
 
-      // Décoder le JSON
-      _mapDesParametres = jsonDecode(jsonString) as Map<String, dynamic>;
-    } catch (e) {
-      print('Erreur lors de la lecture ou du décodage du fichier JSON : $e');
-      _mapDesParametres = {};
+        // Décoder le JSON
+        _mapDesParametres = jsonDecode(jsonString) as Map<String, dynamic>;
+      } catch (e) {
+        print('Erreur lors de la lecture ou du décodage du fichier JSON : $e');
+        _mapDesParametres = {};
+      }
+      print('Fichier json lu : $filename');
+      print(_mapDesParametres);
     }
-    print('Fichier json lu : $filename');
-    print(_mapDesParametres);
   }
 
   Future<void> ecritureFichierParametres() async {
+    if (kIsWeb) {
+      print('Mode Web démo : sauvegarde ignorée.');
+      return;
+    }
     // Convertir les données en format JSON.
     String jsonData = jsonEncode(_mapDesParametres);
     print(jsonData);

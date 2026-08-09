@@ -125,7 +125,6 @@ class ColorListScreen extends StatelessWidget {
       {'name': 'primaryColorLight Color', 'color': theme.primaryColorLight},
       {'name': 'disabledColor Color', 'color': theme.disabledColor},
       {'name': 'highlightColor Color', 'color': theme.highlightColor},
-      {'name': 'indicatorColor Color', 'color': theme.indicatorColor},
       {
         'name': 'secondaryHeaderColor Color',
         'color': theme.secondaryHeaderColor

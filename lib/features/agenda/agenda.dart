@@ -6,6 +6,9 @@ import 'package:app_a_o_c/pages/agenda/filtre_config_generale.dart';
 import 'package:app_a_o_c/shared/utils/date_utilitaire.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
 class RendezVous {
   String nom = ""; // Pour avoir info min si plus dans la liste des adhérents.
   String telephone =
@@ -181,6 +184,7 @@ class Agenda {
     // Maj le fichier.
     _ecritureAgenda(file);
   }
+
 /*
 // Recherche de la première date avec une dipo donnée.
   DateTime rendezVousAuPlusTot(int poids) {
@@ -358,12 +362,21 @@ class Agenda {
   }
 
   Future<void> _lectureAgenda(File file) async {
-    final jsonString = await file.readAsString();
+    String jsonString;
+    if (kIsWeb) {
+      jsonString = await rootBundle.loadString('assets/data/agenda_demo.json');
+    } else {
+      jsonString = await file.readAsString();
+    }
     final jsonList = jsonDecode(jsonString) as List;
     _listeJournee = jsonList.map((json) => Journee.fromJson(json)).toList();
   }
 
   Future<void> _ecritureAgenda(File file) async {
+    if (kIsWeb) {
+      print('Mode Web démo : sauvegarde ignorée.');
+      return;
+    }
     final jsonString =
         jsonEncode(_listeJournee.map((day) => day.toJson()).toList());
     await file.writeAsString(jsonString);
