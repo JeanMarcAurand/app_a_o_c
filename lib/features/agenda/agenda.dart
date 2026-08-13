@@ -171,6 +171,10 @@ class Agenda {
 // Maj des Caracteristiques d'un journée ( sauf poids total fixé par rdv)
   Future<void> majCaracteristiquesJournee(DateTime dateDebut, DateTime dateFin,
       List<bool> dayToApply, CaracteristiquesJournee caracFrom) async {
+    if (kIsWeb) {
+      print('Mode Web démo : sauvegarde ignorée.');
+      return;
+    }
     File file = await getLocalFileName(anneeAgenda);
 
     DateTime dateCourante = dateDebut;
@@ -216,11 +220,16 @@ class Agenda {
 
   Future<void> setAnneeAgenda(int annee) async {
     anneeAgenda = annee;
+    bool isPresent = true;
+    if (kIsWeb) {
+      await _lectureAgenda(null);
+      return;
+    }
+    File  file = await getLocalFileName(annee);
 
-    File file = await getLocalFileName(annee);
-
-    // then = callback qd methode async est finie:
-    bool isPresent = await file.exists();
+      // then = callback qd methode async est finie:
+      isPresent = await file.exists();
+    
     if (isPresent) {
       // Lit le nouveau fichier et maj _listeJournee.
 
@@ -361,12 +370,12 @@ class Agenda {
     return File('$path/app_a_o_c_Agenda$annee.json');
   }
 
-  Future<void> _lectureAgenda(File file) async {
+  Future<void> _lectureAgenda(File? file) async {
     String jsonString;
     if (kIsWeb) {
       jsonString = await rootBundle.loadString('assets/data/agenda_demo.json');
     } else {
-      jsonString = await file.readAsString();
+      jsonString = await file!.readAsString();
     }
     final jsonList = jsonDecode(jsonString) as List;
     _listeJournee = jsonList.map((json) => Journee.fromJson(json)).toList();

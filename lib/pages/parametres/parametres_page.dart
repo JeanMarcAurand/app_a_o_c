@@ -9,6 +9,8 @@ import '../adherents/adherents_page.dart';
 import '../../features/adherents/liste_adherents.dart';
 import '../../shared/widgets/labeled_switch.dart';
 
+import 'package:flutter/foundation.dart';
+
 class ParametresPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -70,22 +72,28 @@ class ParametresPage extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      final directory =
-                          await getApplicationDocumentsDirectory();
-                      String? selectedFile =
-                          await pickFile(directory.path, "csv");
-                      if (selectedFile != null &&
-                          selectedFile.toString().isNotEmpty) {
-                        // Mise à jour du fichier de paramètres.
-                        Parametres instanceParametres = Parametres.instance;
-                        appState.majParametresNomFichierAdherent(selectedFile);
-                        await instanceParametres.ecritureFichierParametres();
+                      if (kIsWeb) {
+                        print('Mode Web démo : chargement ignoré.');
+                        return;
+                      } else {
+                        final directory =
+                            await getApplicationDocumentsDirectory();
+                        String? selectedFile =
+                            await pickFile(directory.path, "csv");
+                        if (selectedFile != null &&
+                            selectedFile.toString().isNotEmpty) {
+                          // Mise à jour du fichier de paramètres.
+                          Parametres instanceParametres = Parametres.instance;
+                          appState
+                              .majParametresNomFichierAdherent(selectedFile);
+                          await instanceParametres.ecritureFichierParametres();
 
-                        // Mise a jour à partir du nouveau fichier d'adhérents.
-                        ListeAdherents.instance.localFileName = selectedFile;
-                        ListeAdherents instanceListeAdherent =
-                            ListeAdherents.instance;
-                        await instanceListeAdherent.lectureFichierAdherents();
+                          // Mise a jour à partir du nouveau fichier d'adhérents.
+                          ListeAdherents.instance.localFileName = selectedFile;
+                          ListeAdherents instanceListeAdherent =
+                              ListeAdherents.instance;
+                          await instanceListeAdherent.lectureFichierAdherents();
+                        }
                       }
                     },
                     child: Text('Sélectionner un fichier'),
