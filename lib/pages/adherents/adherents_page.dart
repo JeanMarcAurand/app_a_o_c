@@ -56,12 +56,11 @@ class AdherentsPage extends StatelessWidget {
   }
 }
 
-
-
 class AdherentsListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    print('AdherentsListScreen');
 
     return Flexible(
       flex: 1,
@@ -632,6 +631,7 @@ class BarreNavigation extends StatelessWidget {
     var appState = context.watch<MyAppState>();
     var myControllerTextFieldRechercheLocal =
         appState.myControllerTextFieldRecherche;
+    print('BarreNavigation');
 
     return Row(children: [
       Expanded(
@@ -836,4 +836,3 @@ class ChampTexte extends StatelessWidget {
     );
   }
 }
-

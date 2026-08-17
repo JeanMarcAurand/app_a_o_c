@@ -9,6 +9,7 @@ class QRCodeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    print('QRCodeWidget');
     Adherent localCurrentAd = appState.adherentQRCode;
     String texteTel = "Pas de numéro de tel pour cet adhérent.";
     String noTel = "";
