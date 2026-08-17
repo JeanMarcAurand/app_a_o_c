@@ -228,9 +228,18 @@ class ListeAdherents {
       if (isFirstRow) {
         isFirstRow = false;
         firstRow = row;
+        print('Nombre de lignes CSV : ${csvTable.length}');
+        print('firstRow avant boucle : $firstRow');
       } else {
+        print('Traitement ligne adhérent : $row');
+        print('Index Civilité = ${firstRow.indexOf("Civilité")}');
+        print('Index Nom = ${firstRow.indexOf("Nom")}');
+        print('Index Prénom = ${firstRow.indexOf("Prénom")}');
+
         Adherent adherent = Adherent(row[firstRow.indexOf("Civilité")],
             row[firstRow.indexOf("Nom")], row[firstRow.indexOf("Prénom")]);
+        print('Adhérent créé : ${adherent.nom} ${adherent.prenom}');
+
         adherent.noRue = row[firstRow.indexOf("No")].toString();
         adherent.adresse = row[firstRow.indexOf("Lieu")];
         adherent.complementAdresse = row[firstRow.indexOf("Rue")];
@@ -249,8 +258,10 @@ class ListeAdherents {
     }
     // Init au debut.
     _listeAdherentsCourant = _listeAdherentsComplet;
-    print('Nombre adhérents après lecture(_listeAdherentsComplet) : ${_listeAdherentsComplet.length}');
-    print('Nombre adhérents après lecture(_listeAdherentsCourant) : ${_listeAdherentsCourant.length}');
+    print(
+        'Nombre adhérents après lecture(_listeAdherentsComplet) : ${_listeAdherentsComplet.length}');
+    print(
+        'Nombre adhérents après lecture(_listeAdherentsCourant) : ${_listeAdherentsCourant.length}');
 
     print('lectureFichierAdherents end');
   }
