@@ -3,11 +3,13 @@ import 'dart:io';
 
 import 'package:app_a_o_c/shared/utils/app_config.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:csv/csv_settings_autodetection.dart';
 import 'package:csv/csv.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+
 
 class Adherent {
   Adherent(this.civilite, this.nom, this.prenom);
@@ -198,7 +200,9 @@ class ListeAdherents {
 
   Future<List<List<dynamic>>> readCSV() async {
     String csvString;
-
+    final detector = FirstOccurrenceSettingsDetector(
+      eols: ['\r\n', '\n'],
+    );
     // Lire le fichier
     if (kIsWeb) {
       csvString = await rootBundle.loadString('assets/data/adherents_demo.csv');
@@ -214,8 +218,9 @@ class ListeAdherents {
     print('split LF : ${csvString.split('\n').length}');
 
     // Parser le contenu du fichier CSV
-    return const CsvToListConverter(
+    return CsvToListConverter(
       fieldDelimiter: ';',
+      csvSettingsDetector: detector,
     ).convert(csvString);
   }
 
