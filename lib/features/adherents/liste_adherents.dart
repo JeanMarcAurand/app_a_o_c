@@ -206,6 +206,12 @@ class ListeAdherents {
       final file = await _localFile;
       csvString = await file.readAsString();
     }
+
+    print('Longueur CSV : ${csvString.length}');
+    print('CR : ${'\r'.allMatches(csvString).length}');
+    print('LF : ${'\n'.allMatches(csvString).length}');
+    print('CRLF : ${'\r\n'.allMatches(csvString).length}');
+
     // Parser le contenu du fichier CSV
     return const CsvToListConverter(
       fieldDelimiter: ';',
