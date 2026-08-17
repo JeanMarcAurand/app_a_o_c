@@ -83,7 +83,6 @@ class Adherent {
   String dateCreation = "";
 
   void copyAdherentFrom(Adherent adherentSource) {
-    print('copyAdherentFrom($adherentSource)');
     civilite = adherentSource.civilite;
     nom = adherentSource.nom;
     prenom = adherentSource.prenom;
@@ -99,11 +98,9 @@ class Adherent {
     sourceDerniereMAJ = adherentSource.sourceDerniereMAJ;
     identificateur = adherentSource.identificateur;
     dateCreation = adherentSource.dateCreation;
-    print('copyAdherentFrom end');
   }
 
   bool isAdherentIdentique(Adherent adherent) {
-    print('isAdherentIdentique($adherent)');
     return (civilite == adherent.civilite) &&
         (nom == adherent.nom) &&
         (prenom == adherent.prenom) &&
@@ -150,7 +147,6 @@ class ListeAdherents {
 
   // Constructeur privé avec initialisations
   ListeAdherents._privateConstructor() {
-    print('_privateConstructor');
     // Init avant lecture fichier.
     for (int indice = 0; indice < _listeAdherentsComplet.length; indice++) {
       _listeAdherentsComplet
@@ -175,7 +171,6 @@ class ListeAdherents {
 
 // Init au debut.
     _listeAdherentsCourant = _listeAdherentsComplet;
-    print('_privateConstructor end');
   }
 
   Future<String> get _localPath async {
@@ -211,12 +206,6 @@ class ListeAdherents {
       csvString = await file.readAsString();
     }
 
-    print('Longueur CSV : ${csvString.length}');
-    print('CR : ${'\r'.allMatches(csvString).length}');
-    print('LF : ${'\n'.allMatches(csvString).length}');
-    print('CRLF : ${'\r\n'.allMatches(csvString).length}');
-    print('split LF : ${csvString.split('\n').length}');
-
     // Parser le contenu du fichier CSV
     return CsvToListConverter(
       fieldDelimiter: ';',
@@ -225,7 +214,6 @@ class ListeAdherents {
   }
 
   Future<void> lectureFichierAdherents() async {
-    print('lectureFichierAdherents');
 
     _listeAdherentsComplet.clear();
 
@@ -240,17 +228,9 @@ class ListeAdherents {
       if (isFirstRow) {
         isFirstRow = false;
         firstRow = row;
-        print('Nombre de lignes CSV : ${csvTable.length}');
-        print('firstRow avant boucle : $firstRow');
       } else {
-        print('Traitement ligne adhérent : $row');
-        print('Index Civilité = ${firstRow.indexOf("Civilité")}');
-        print('Index Nom = ${firstRow.indexOf("Nom")}');
-        print('Index Prénom = ${firstRow.indexOf("Prénom")}');
-
         Adherent adherent = Adherent(row[firstRow.indexOf("Civilité")],
             row[firstRow.indexOf("Nom")], row[firstRow.indexOf("Prénom")]);
-        print('Adhérent créé : ${adherent.nom} ${adherent.prenom}');
 
         adherent.noRue = row[firstRow.indexOf("No")].toString();
         adherent.adresse = row[firstRow.indexOf("Lieu")];
@@ -270,17 +250,9 @@ class ListeAdherents {
     }
     // Init au debut.
     _listeAdherentsCourant = _listeAdherentsComplet;
-    print(
-        'Nombre adhérents après lecture(_listeAdherentsComplet) : ${_listeAdherentsComplet.length}');
-    print(
-        'Nombre adhérents après lecture(_listeAdherentsCourant) : ${_listeAdherentsCourant.length}');
-
-    print('lectureFichierAdherents end');
   }
 
   Future<void> ecritureFichierAdherents() async {
-    print('ecritureFichierAdherents');
-
     if (kIsWeb) {
       print('Mode Web démo : sauvegarde ignorée.');
       return;
@@ -369,8 +341,6 @@ class ListeAdherents {
   }
 */
   void searchStingInName(String text) {
-    print('searchStingInName');
-
     _dernierTextRecherche = text;
     _listeAdherentsRecherche.clear();
 
@@ -386,12 +356,9 @@ class ListeAdherents {
     _listeAdherentsCourant = _listeAdherentsRecherche;
     //print(
     //    'searchStingInName adherentCourant:$adherentCourant\n listeAdherents:$listeAdherentsCourant');
-    print('searchStingInName end');
   }
 
   Future<void> deleteAdherent(Adherent adherent) async {
-    print('deleteAdherent');
-
     _listeAdherentsComplet.remove(adherent);
     _listeAdherentsCourant.remove(adherent);
 
@@ -399,12 +366,9 @@ class ListeAdherents {
       _listeAdherentsCourant.add(adherentVide);
     }
     await ecritureFichierAdherents();
-    print('deleteAdherent end');
   }
 
   Future<void> createAdherentEdite(Adherent adherent) async {
-    print('createAdherentEdite');
-
     Adherent nouvelAdherent = Adherent("", "", "");
     nouvelAdherent.copyAdherentFrom(adherent);
     nouvelAdherent.dateCreation = DateFormat('dd/MM/yyyy').format(currentDate);
@@ -428,13 +392,10 @@ class ListeAdherents {
     }
 
     await ecritureFichierAdherents();
-    print('createAdherentEdite end');
   }
 
   Future<void> majAdherentEdite(
       Adherent editAd, Adherent localCurrentAd) async {
-    print('majAdherentEdite');
-
     editAd.dateDerniereMAJ = DateFormat('dd/MM/yyyy').format(currentDate);
     editAd.sourceDerniereMAJ = "modifié app_a_o_c";
     localCurrentAd.copyAdherentFrom(editAd);
@@ -442,7 +403,6 @@ class ListeAdherents {
         .sort((a, b) => a.nom.toLowerCase().compareTo(b.nom.toLowerCase()));
 
     await ecritureFichierAdherents();
-    print('majAdherentEdite end');
   }
 
   @override
