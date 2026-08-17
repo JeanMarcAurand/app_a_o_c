@@ -211,6 +211,7 @@ class ListeAdherents {
     print('CR : ${'\r'.allMatches(csvString).length}');
     print('LF : ${'\n'.allMatches(csvString).length}');
     print('CRLF : ${'\r\n'.allMatches(csvString).length}');
+    print('split LF : ${csvString.split('\n').length}');
 
     // Parser le contenu du fichier CSV
     return const CsvToListConverter(
