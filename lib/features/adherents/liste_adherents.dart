@@ -249,6 +249,9 @@ class ListeAdherents {
     }
     // Init au debut.
     _listeAdherentsCourant = _listeAdherentsComplet;
+    print('Nombre adhérents après lecture(_listeAdherentsComplet) : ${_listeAdherentsComplet.length}');
+    print('Nombre adhérents après lecture(_listeAdherentsCourant) : ${_listeAdherentsCourant.length}');
+
     print('lectureFichierAdherents end');
   }
 
